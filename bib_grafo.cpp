@@ -19,15 +19,29 @@ int mode;
 
 class Grafo {
 private:
-    vector<vector<int>> adj;    // Lista de adjacências
-    vector<vector<int>> mat;    // Matriz de adjacências
+    int V;                                  // Número de vértices
+    int A = 0;                              // Número de arestas
+    int grauMax;
+    int grauMin;
+    double grauMediano;
+    double grauMedio;
+    vector<vector<int>> adj;                // Lista de adjacências
+    vector<vector<int>> mat;                // Matriz de adjacências
+    vector<int> grau;                       // Vetor com os graus de cada vértice
 public:
-    int V;                      // Número de vértices
-    int A;                      // Número de arestas
     Grafo(string FileName, int mode);
     void addEdge(int v1, int v2, int mode);
+    int getGrauMax();
     void printListAdj();
     void printMatrizAdj();
+
+    // Métodos getters
+    int getV() const { return V; }
+    int getA() const { return A; }
+    int getGrauMax() const { return grauMax; }
+    int getGrauMin() const { return grauMin; }
+    double getGrauMediano() const { return grauMediano; }
+    double getGrauMedio() const { return grauMedio; }
 };
 
 Grafo::Grafo(string FileName, int mode) {
@@ -41,6 +55,7 @@ Grafo::Grafo(string FileName, int mode) {
         arquivo >> V;
         if (mode == 0) adj.resize(V);
         else mat.resize(V, vector<int>(V, 0));
+        grau.resize(V, 0);
 
         while(arquivo >> v1 >> v2){
             addEdge(v1, v2, mode);
@@ -50,6 +65,8 @@ Grafo::Grafo(string FileName, int mode) {
     }
     // this->V = V;
 
+    grauMax = getGrauMax();
+    grauMedio = 2*A/V;  
 }
 
 void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação em lista e mode = 1 para representação em matriz
@@ -62,6 +79,14 @@ void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação
         mat[v1][v2] = 1;
         mat[v2][v1] = 1;
     }
+}
+
+int Grafo::getGrauMax() {
+    int grauMax = 0;
+    for (int i = 0; i < V; ++i) {
+        grauMax = max(grauMax, (int)adj[i].size());
+    }
+    return grauMax;
 }
 
 void Grafo::printListAdj() {
@@ -103,6 +128,9 @@ int main() {
 
     clock_t end = clock();
 
+    cout << g.getV() << " " << g.getA() << endl;
+    cout << "Grau maximo: " << g.getGrauMax() << endl;   
+    cout << "Grau medio: " << g.getGrauMedio() << endl;
     cout << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
 
     // Criar arquivo de saída com as informações
