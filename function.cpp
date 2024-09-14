@@ -4,6 +4,7 @@ using namespace std;
 #include <stdio.h> //Biblioteca para usar o get char
 #include <ctime> //Biblioteca para medir o tempo de execução
 #include <fstream> //Biblioteca para escrita e leitura de arquivos txt
+#include <sstream> //Biblioteca para manipulação de strings
 #include <stack> //Biblioteca com implementação de pilha
 #include <queue> //Biblioteca com implementação de fila
 #include <vector> //Biblioteca com implementação de array dinâmico
