@@ -17,11 +17,11 @@ using namespace std;
 
 
 // Variáveis globais
-int V;                          // Número de vértices
-int A = 0;                      // Número de arestas
+int V;                               // Número de vértices
+int A = 0;                           // Número de arestas
 vector<vector<int>> adj(V+1);        // Lista de adjacências
 vector<vector<int>> mat(V+1);        // Matriz de adjacências
-bool mode;                      // 0 para lista e 1 para matriz
+bool mode;                           // 0 para lista e 1 para matriz
 
 
 void addEdge(int mode, int v1, int v2) { // mode = 0 para representação em lista e mode = 1 para representação em matriz
@@ -60,7 +60,7 @@ int main() {
     ios_base::sync_with_stdio(false);
 
     // string FileName; cin >> FileName;
-    string FileName = "grafo_1.txt";
+    string FileName = "grafo_6.txt";
     std::ifstream arquivo(FileName);
 
     // cin >> mode;
@@ -92,6 +92,19 @@ int main() {
     cout << "Numero de vertices no grafo: " << V << endl;
     cout << "Numero de arestas no grafo: " << A << endl;
     cout << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
+
+    // Criar arquivo de saída com as informações
+    std::ofstream outputFile("grafo_info.txt");
+    if (outputFile.is_open()) {
+        outputFile << "Numero de vertices no grafo: " << V << endl;
+        outputFile << "Numero de arestas no grafo: " << A << endl;
+        outputFile << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
+        outputFile.close();
+        cout << "Informacoes salvas em grafo_info.txt" << endl;
+    } 
+    else {
+        std::cerr << "Nao foi possível criar o arquivo de saida" << "\n";
+    }
 
     return 0;
 
