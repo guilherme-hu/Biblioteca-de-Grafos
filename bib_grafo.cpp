@@ -28,8 +28,11 @@ private:
     vector<vector<int>> adj;                // Lista de adjacências
     vector<vector<int>> mat;                // Matriz de adjacências
     vector<int> grau;                       // Vetor com os graus de cada vértice
-    vector<bool> vis;                       // Vetor com os graus de cada vértice
+    vector<bool> vis;                       // Vetor de visitados
+    vector<int> pai;                        // Vetor com o vértice pai de cada vértice
+    vector<int> nivel;                     // Vetor com o nível de cada vértice
     vector<pair<int,vector<int>>> compCon;  // Componentes conexas, com o tamanho e os vértices de cada uma
+
 public:
     Grafo(string FileName, int mode);
     void addEdge(int v1, int v2, int mode);
@@ -38,8 +41,8 @@ public:
     vector<int> bfs_CompCon(int s);
     void bfs(int s, int print);
     void dfs(int s, int print);
-    void distancia(int v, int u);
-    void diametro();
+    int distancia(int v, int u);
+    int diametro();
 
 
     // Métodos getters
@@ -66,12 +69,15 @@ Grafo::Grafo(string FileName, int mode = 0) {
         else mat.resize(V, vector<int>(V, 0));
         grau.resize(V,0);
         vis.resize(V,false);
+        pai.resize(V,-2);
+        nivel.resize(V,0);
 
         while(arquivo >> v1 >> v2){
             addEdge(v1, v2, mode);
             A++;
         }
         arquivo.close();
+        cout << "Dados do txt pegos com sucesso!" << endl;
     }
 
     // Cálculo dos graus
@@ -144,9 +150,57 @@ vector<int> Grafo::bfs_CompCon(int s) {
     return componente;
 }
 
-void Grafo::bfs(int s, int print = 0){
-    // pai e nivel
+void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
+    s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
+    vector<int> visitados(V, false);
+    if (mode == 0){         // mode = 0 para representação em lista
+        queue<int> q;
+        visitados[s] = true; 
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v : adj[u]) {
+                if (!visitados[v]) {
+                    visitados[v] = true; 
+                    pai[v] = u;
+                    nivel[v] = nivel[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+    }
+    else{                   // mode = 1 para representação em matriz
+        queue<int> q;
+        visitados[s] = true;
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v = 0; v < V; ++v) {
+                if (mat[u][v] && !visitados[v]) {
+                    visitados[v] = true; 
+                    pai[v] = u;
+                    nivel[v] = nivel[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+    }
     // cout no arquivo
+    if (print == 0){
+        std::ofstream outputFile("bfs_info.txt");
+        if (outputFile.is_open()) {
+            for (int i = 0; i < V; i++){
+                if(visitados[i] == false) continue;
+                else outputFile << "Vertice " << i+1 << ": pai = " << pai[i]+1 << ", nivel = " << nivel[i] << endl;
+            }
+            cout << "Informacoes salvas em bfs_info.txt" << endl;
+        } 
+        else {
+            std::cerr << "Nao foi possível criar o arquivo de saida" << "\n";
+        }
+    }
 }
 
 void Grafo::dfs(int s, int print = 0){
@@ -154,12 +208,15 @@ void Grafo::dfs(int s, int print = 0){
     // cout no arquivo
 }
 
-void Grafo::distancia(int v, int u){
-    //
+int Grafo::distancia(int v, int u){         // v é o vértice inicial, e u é o vértice ao qual se quer chegar 
+    pai.clear(); pai.resize(V,-2);
+    nivel.clear(); nivel.resize(V,0);
+    bfs(v,1);                               // obs: os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s,
+    return nivel[u-1];                      //      o de u a gente faz aqui
 }
 
-void Grafo::diametro(){
-    //
+int Grafo::diametro(){
+    return 0;
 }
 
 void Grafo::printListAdj() {
@@ -188,7 +245,7 @@ int main() {
 
 
     // string FileName; cin >> FileName;
-    string FileName = "grafo_6.txt";
+    string FileName = "grafo_teste.txt";
     
     // cin >> mode;     // 0 para lista e 1 para matriz
     int mode = 0;
@@ -212,9 +269,12 @@ int main() {
         //     cout << g.getCompCon()[i].second[j]+1 << " ";
         // }
     }
-    
+
     clock_t end = clock();
     cout << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
+
+    g.bfs(17);
+    cout << "Distancia: " << g.distancia(7, 14) << endl;
 
     // Criar arquivo de saída com as informações
     std::ofstream outputFile("grafo_info.txt");
