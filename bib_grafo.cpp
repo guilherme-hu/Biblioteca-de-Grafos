@@ -91,7 +91,6 @@ Grafo::Grafo(string FileName, int mode = 0) {
 
 
     // Cálculo das componentes conexas
-    
     for (int i = 0; i < V; i++){
         if(vis[i] == false){
             vector<int> aux = bfs_CompCon(i);
@@ -204,8 +203,26 @@ void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para n
 }
 
 void Grafo::dfs(int s, int print = 0){
+    s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
+    vector<int> visitados(V, false);
+
     // pai e nivel
+    stack<int> pilha;
+    
     // cout no arquivo
+    if (print == 0){
+        std::ofstream outputFile("bfs_info.txt");
+        if (outputFile.is_open()) {
+            for (int i = 0; i < V; i++){
+                if(visitados[i] == false) continue;
+                else outputFile << "Vertice " << i+1 << ": pai = " << pai[i]+1 << ", nivel = " << nivel[i] << endl;
+            }
+            cout << "Informacoes salvas em bfs_info.txt" << endl;
+        } 
+        else {
+            std::cerr << "Nao foi possível criar o arquivo de saida" << "\n";
+        }
+    }
 }
 
 int Grafo::distancia(int v, int u){         // v é o vértice inicial, e u é o vértice ao qual se quer chegar 
