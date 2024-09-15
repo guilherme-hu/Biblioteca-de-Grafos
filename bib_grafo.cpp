@@ -58,9 +58,9 @@ public:
 Grafo::Grafo(string FileName, int mode = 0) {
     this->mode = mode;
     std::ifstream arquivo(FileName);
-    cout << "Pegando dados do txt..." << endl;
+    cout << "-> Pegando dados do txt..." << endl;
     if(!arquivo.is_open()){
-        std::cerr << "Não foi possível abrir o arquivo" << "\n";
+        std::cerr << "-> Não foi possível abrir o arquivo" << "\n";
     }
     else{
         int v1, v2;
@@ -77,7 +77,7 @@ Grafo::Grafo(string FileName, int mode = 0) {
             A++;
         }
         arquivo.close();
-        cout << "Dados do txt pegos com sucesso!" << endl;
+        cout << "-> Dados do txt pegos com sucesso!" << endl;
     }
 
     // Cálculo dos graus
@@ -194,10 +194,10 @@ void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para n
                 if(visitados[i] == false) continue;
                 else outputFile << "Vertice " << i+1 << ": pai = " << pai[i]+1 << ", nivel = " << nivel[i] << endl;
             }
-            cout << "Informacoes salvas em bfs_info.txt" << endl;
+            cout << "-> Informacoes da bfs salvas em bfs_info.txt" << endl;
         } 
         else {
-            std::cerr << "Nao foi possível criar o arquivo de saida" << "\n";
+            std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
         }
     }
 }
@@ -211,16 +211,16 @@ void Grafo::dfs(int s, int print = 0){
     
     // cout no arquivo
     if (print == 0){
-        std::ofstream outputFile("bfs_info.txt");
+        std::ofstream outputFile("dfs_info.txt");
         if (outputFile.is_open()) {
             for (int i = 0; i < V; i++){
                 if(visitados[i] == false) continue;
                 else outputFile << "Vertice " << i+1 << ": pai = " << pai[i]+1 << ", nivel = " << nivel[i] << endl;
             }
-            cout << "Informacoes salvas em bfs_info.txt" << endl;
+            cout << "-> Informacoes da dfs salvas em dfs_info.txt" << endl;
         } 
         else {
-            std::cerr << "Nao foi possível criar o arquivo de saida" << "\n";
+            std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
         }
     }
 }
@@ -310,10 +310,10 @@ int main() {
             }
             outputFile << endl;   
         }
-        cout << "Informacoes salvas em grafo_info.txt" << endl;
+        cout << "-> Informacoes gerais salvas em grafo_info.txt" << endl;
     } 
     else {
-        std::cerr << "Nao foi possível criar o arquivo de saida" << "\n";
+        std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
     }
     
     return 0;
