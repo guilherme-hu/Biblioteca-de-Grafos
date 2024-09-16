@@ -36,13 +36,14 @@ private:
 public:
     Grafo(string FileName, int mode);
     void addEdge(int v1, int v2, int mode);
-    void printListAdj();
-    void printMatrizAdj();
     vector<int> bfs_CompCon(int s);
     void bfs(int s, int print);
     void dfs(int s, int print);
     int distancia(int v, int u);
     int diametro();
+    void geradortxt();
+    void printListAdj();
+    void printMatrizAdj();
 
 
     // Métodos getters
@@ -99,6 +100,7 @@ Grafo::Grafo(string FileName, int mode = 0) {
     }
     sort(compCon.begin(),compCon.end(),greater< pair<int,vector<int>> >());
 
+    geradortxt();
 }
 
 void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação em lista e mode = 1 para representação em matriz
@@ -256,6 +258,31 @@ void Grafo::printMatrizAdj() {
     }
 }
 
+void Grafo::geradortxt(){  // Criar arquivo de saída com as informações
+    std::ofstream outputFile("grafo_info.txt");
+    if (outputFile.is_open()) {
+        outputFile << "Vértices: " << V << endl; 
+        outputFile << "Aresta: " << A << endl;
+        outputFile << "Grau máximo: " << grauMax << endl; 
+        outputFile << "Grau mínimo: " << grauMin << endl;    
+        outputFile << "Grau mediano: " << grauMediano << endl;
+        outputFile << "Grau médio: " << grauMedio << endl;
+        outputFile << endl;
+        for (int i = 0; i < compCon.size(); i++){
+            outputFile << "Componente conexa " << i+1 << ": " << compCon[i].first << " vértices" << endl;
+            for (int j = 0; j < compCon[i].first; j++){
+                outputFile << compCon[i].second[j]+1 << " ";
+            }
+            outputFile << endl;   
+        }
+        cout << "-> Informacoes salvas em grafo_info.txt" << endl;
+    } 
+    else {
+        std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
+    }
+}
+
+
 int main() {
     cin.tie(NULL);
     ios_base::sync_with_stdio(false);
@@ -293,29 +320,6 @@ int main() {
     g.bfs(17);
     cout << "Distancia: " << g.distancia(7, 14) << endl;
 
-    // Criar arquivo de saída com as informações
-    std::ofstream outputFile("grafo_info.txt");
-    if (outputFile.is_open()) {
-        outputFile << "Vertices: " << g.getV() << endl; 
-        outputFile << "Aresta: " << g.getA() << endl;
-        outputFile << "Grau maximo: " << g.getGrauMax() << endl; 
-        outputFile << "Grau minimo: " << g.getGrauMin() << endl;    
-        outputFile << "Grau mediano: " << g.getGrauMediano() << endl;
-        outputFile << "Grau medio: " << g.getGrauMedio() << endl;
-        outputFile << endl;
-        for (int i = 0; i < g.getCompCon().size(); i++){
-            outputFile << "Componente conexa " << i+1 << ": " << g.getCompCon()[i].first << " vertices" << endl;
-            for (int j = 0; j < g.getCompCon()[i].first; j++){
-                outputFile << g.getCompCon()[i].second[j]+1 << " ";
-            }
-            outputFile << endl;   
-        }
-        cout << "-> Informacoes gerais salvas em grafo_info.txt" << endl;
-    } 
-    else {
-        std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
-    }
-    
     return 0;
 
 }
