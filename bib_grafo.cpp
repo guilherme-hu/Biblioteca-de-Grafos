@@ -153,6 +153,9 @@ vector<int> Grafo::bfs_CompCon(int s) {
 
 void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
+    pai.clear(); pai.resize(V,-2);
+    nivel.clear(); nivel.resize(V,-1);
+    nivel[s] = 0;
     vector<bool> visitados(V, false);
     if (mode == 0){         // mode = 0 para representação em lista
         queue<int> q;
@@ -207,11 +210,11 @@ void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para n
 void Grafo::dfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     vector<bool> visitados(V, false);
+    pai.clear(); pai.resize(V,-2);
+    nivel.clear(); nivel.resize(V,-1);
 
-    // pai e nivel
     stack<int> pilha;
     pilha.push(s);
-    pai[s] = -2;
     nivel[s] = 0;
 
     if (mode == 0) {                     // representação em lista
@@ -259,9 +262,6 @@ void Grafo::dfs(int s, int print = 0){      // print = 0 para printar e 1 para n
 }
 
 int Grafo::distancia(int v, int u){         // v é o vértice inicial, e u é o vértice ao qual se quer chegar 
-    pai.clear(); pai.resize(V,-2);
-    nivel.clear(); nivel.resize(V,-1);
-    nivel[v-1] = 0;
     bfs(v,1);                               // obs: os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s,
     return nivel[u-1];                      //      o de u a gente faz aqui
 }
@@ -293,6 +293,8 @@ void Grafo::geradortxt(){  // Criar arquivo de saída com as informações
         std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
     }
 }
+
+
 
 void Grafo::printListAdj() {
     for (int i = 0; i < V; ++i) {
