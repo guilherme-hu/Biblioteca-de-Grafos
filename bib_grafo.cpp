@@ -151,7 +151,7 @@ vector<int> Grafo::bfs_CompCon(int s) {
 
 void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
-    vector<int> visitados(V, false);
+    vector<bool> visitados(V, false);
     if (mode == 0){         // mode = 0 para representação em lista
         queue<int> q;
         visitados[s] = true; 
@@ -202,12 +202,43 @@ void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para n
     }
 }
 
-void Grafo::dfs(int s, int print = 0){
+void Grafo::dfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
-    vector<int> visitados(V, false);
+    vector<bool> visitados(V, false);
 
     // pai e nivel
     stack<int> pilha;
+    pilha.push(s);
+    pai[s] = -2;
+    nivel[s] = 0;
+
+    if (mode == 0) {                     // representação em lista
+        while (!pilha.empty()){
+            int v = pilha.top();
+            pilha.pop();
+            if (visitados[v]) continue;
+            visitados[v] = true;
+            for (int u : adj[v]){
+                if (visitados[u]) continue;     // pular se u já foi visitado
+                pilha.push(u);
+                pai[u] = v; nivel[u] = nivel[v] + 1;
+            }
+        }
+    }
+    else {                     // representação em matriz
+        while (!pilha.empty()){
+            int v = pilha.top();
+            pilha.pop();
+            if (visitados[v]) continue;
+            visitados[v] = true;
+            for (int u = 0 ; u < V ; u++){
+                if (visitados[u] || mat[v][u] == false) continue;     // pular se u já foi visitado ou não é vizinho
+                pilha.push(u);
+                pai[u] = v; nivel[u] = nivel[v] + 1;
+            }
+        }
+    }
+
     
     // cout no arquivo
     if (print == 0){
@@ -227,7 +258,8 @@ void Grafo::dfs(int s, int print = 0){
 
 int Grafo::distancia(int v, int u){         // v é o vértice inicial, e u é o vértice ao qual se quer chegar 
     pai.clear(); pai.resize(V,-2);
-    nivel.clear(); nivel.resize(V,0);
+    nivel.clear(); nivel.resize(V,-1);
+    nivel[v-1] = 0;
     bfs(v,1);                               // obs: os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s,
     return nivel[u-1];                      //      o de u a gente faz aqui
 }
@@ -291,6 +323,7 @@ int main() {
     cout << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
 
     g.bfs(17);
+    g.dfs(17);
     cout << "Distancia: " << g.distancia(7, 14) << endl;
 
     // Criar arquivo de saída com as informações
