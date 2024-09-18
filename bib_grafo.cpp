@@ -78,7 +78,7 @@ void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação
 vector<int> Grafo::bfs_CompCon(int s) {
     vector<int> componente;
     maior_dist = {-1,0};
-    dist[s] = 0;
+    dist[s] = 0; 
     if (mode == 0){         // mode = 0 para representação em lista
         queue<int> q;
         vis[s] = true; componente.push_back(s);
@@ -120,7 +120,7 @@ void Grafo::bfs(int s, int print){      // print = 0 para printar e 1 para não 
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     pai.clear(); pai.resize(V,-2);
     nivel.clear(); nivel.resize(V,-1);
-    nivel[s] = 0;
+    nivel[s] = 0; pai[s] = -1;
     vector<bool> visitados(V, false);
     if (mode == 0){         // mode = 0 para representação em lista
         queue<int> q;
@@ -182,7 +182,7 @@ void Grafo::dfs(int s, int print){      // print = 0 para printar e 1 para não 
 
     stack<int> pilha;
     pilha.push(s);
-    nivel[s] = 0;
+    nivel[s] = 0; pai[s] = -1;
 
     if (mode == 0) {                     // representação em lista
         while (!pilha.empty()){
