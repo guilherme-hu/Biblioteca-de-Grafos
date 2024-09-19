@@ -1,4 +1,4 @@
-#include "bib_grafo.cpp"
+#include "bib_grafo.h"
 #include <cassert>
 #include <iostream>
 #include <random>
@@ -6,7 +6,7 @@
 #include <vector>
 #include <fstream>
 
-void testBFS(const std::string& filename, std::vector<double>& times) {
+void testDFS(const std::string& filename, std::vector<double>& times) {
     std::ifstream file(filename);
     int first_vertex;
     file >> first_vertex;
@@ -22,7 +22,7 @@ void testBFS(const std::string& filename, std::vector<double>& times) {
         int random_vertex = dis(gen);
 
         auto start = std::chrono::high_resolution_clock::now();
-        g.dfs(random_vertex);
+        g.dfs(random_vertex,1);
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> duration = end - start;
@@ -39,12 +39,12 @@ int main() {
 
     std::vector<double> times_grafo_1, times_grafo_2, times_grafo_3, times_grafo_4, times_grafo_5, times_grafo_6;
 
-    testBFS("grafo_1.txt", times_grafo_1); 
-    testBFS("grafo_2.txt", times_grafo_2); 
-    testBFS("grafo_3.txt", times_grafo_3); 
-    testBFS("grafo_4.txt", times_grafo_4); 
-    testBFS("grafo_5.txt", times_grafo_5); 
-    testBFS("grafo_6.txt", times_grafo_6); 
+    testDFS("grafo_1.txt", times_grafo_1); 
+    testDFS("grafo_2.txt", times_grafo_2); 
+    testDFS("grafo_3.txt", times_grafo_3); 
+    testDFS("grafo_4.txt", times_grafo_4); 
+    testDFS("grafo_5.txt", times_grafo_5); 
+    testDFS("grafo_6.txt", times_grafo_6); 
 
     std::cout << "All DFS tests passed 100 times!" << std::endl;
     cout << endl;
@@ -75,9 +75,15 @@ int main() {
         double stdDev = calculateStdDev(times, mean);
         
         outFile << "Times for " << name << ":\n";
-        for (const auto& time : times) {
-            outFile << time << " seconds\n";
+        outFile << "[ ";
+        for (size_t i = 0; i < times.size(); ++i) {
+            outFile << times[i];
+            if (i != times.size() - 1) {
+                outFile << ", ";
+            }
         }
+        outFile << " ]\n";
+
         outFile << "Mean: " << mean << " seconds\n";
         outFile << "Standard Deviation: " << stdDev << " seconds\n\n";
     };
@@ -93,5 +99,4 @@ int main() {
 
     return 0;
 }
-
 // g++ test_bib_grafo.cpp
