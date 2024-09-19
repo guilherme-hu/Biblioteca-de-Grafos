@@ -16,7 +16,7 @@ using namespace std;
 #include <utility>  //Biblioteca com implementação do pair
 #include <set> //Biblioteca com implementação do set
 #include <deque> //Biblioteca com implementação de deque
-#include <random> //Biblioteca com implementação do randomizador
+#include <cstdlib> //Biblioteca para usar o system
 
 #define INF 0x3f3f3f3f //Define um valor infinito
 
@@ -52,6 +52,8 @@ public:
     int diametro();
     int diametro_aprox();
     void geradortxt();
+    size_t getAdjMemoryUsage() const;
+    size_t getMatMemoryUsage() const;
     void printListAdj();
     void printMatrizAdj();
 
@@ -119,7 +121,6 @@ Grafo::Grafo(string FileName, int mode = 0) {
     
     geradortxt();
 }
-
 
 void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação em lista e mode = 1 para representação em matriz
     v1--; v2--;
@@ -304,6 +305,7 @@ int Grafo::diametro(){
     return max_diameter;
 }
 
+#include <random>
 int Grafo::diametro_aprox() {
     // Calcula o diâmetro do grafo de forma aproximada
     int max_diameter = first_diameter; // Diâmetro inicial
@@ -360,8 +362,6 @@ void Grafo::geradortxt(){  // Criar arquivo de saída com as informações
     }
 }
 
-
-
 void Grafo::printListAdj() {
     for (int i = 0; i < V; ++i) {
         cout << "Vertice " << i+1 << ":";
@@ -380,6 +380,22 @@ void Grafo::printMatrizAdj() {
         }
         cout << endl;
     }
+}
+
+size_t Grafo::getAdjMemoryUsage() const {
+    size_t totalSize = sizeof(adj);
+    for (const auto& vec : adj) {
+        totalSize += sizeof(vec) + (vec.capacity() * sizeof(int));
+    }
+    return totalSize;
+}
+
+size_t Grafo::getMatMemoryUsage() const {
+    size_t totalSize = sizeof(mat);
+    for (const auto& vec : mat) {
+        totalSize += sizeof(vec) + (vec.capacity() * sizeof(bool));
+    }
+    return totalSize;
 }
 
 #endif // GRAFO_H
