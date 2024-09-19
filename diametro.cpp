@@ -307,7 +307,7 @@ int Grafo::diametro() {
     std::uniform_int_distribution<> dis(1, V); // Gera um número aleatório entre 1 e V
 
     auto start_time = std::chrono::steady_clock::now();
-    auto end_time = start_time + std::chrono::hours(2); //  2 hora
+    auto end_time = start_time + std::chrono::hours(2); // 2 horas
 
     while (std::chrono::steady_clock::now() < end_time) {
         int s;
@@ -315,6 +315,7 @@ int Grafo::diametro() {
         do {
             s = dis(gen); // Gera um número aleatório entre 1 e V
         } while (st.find(s) != st.end());
+        st.insert(s); // Insere o número gerado no set
         bfs(s, 1);
         if (maior_dist.second > max_diameter) {
             max_diameter = maior_dist.second;
