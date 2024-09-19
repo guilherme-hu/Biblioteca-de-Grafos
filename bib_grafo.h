@@ -120,13 +120,6 @@ Grafo::Grafo(string FileName, int mode = 0) {
     geradortxt();
 }
 
-// Grafo::~Grafo() {
-//     for (int i = 0; i < V; ++i) {
-//         free(mat[i]);
-//     }
-//     free(mat);
-// }
-
 
 void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação em lista e mode = 1 para representação em matriz
     v1--; v2--;
