@@ -423,3 +423,6 @@ int main() {
 
 }
 
+
+// g++ diameter.cpp -o diameter 
+// ./diameter
