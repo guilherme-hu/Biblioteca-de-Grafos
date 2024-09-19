@@ -1,4 +1,4 @@
-#include "bib_grafo.cpp"
+#include "bib_grafo.h"
 #include <cassert>
 #include <iostream>
 #include <random>
@@ -22,7 +22,7 @@ void testBFS(const std::string& filename, std::vector<double>& times) {
         int random_vertex = dis(gen);
 
         auto start = std::chrono::high_resolution_clock::now();
-        g.bfs(random_vertex);
+        g.bfs(random_vertex,1);
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> duration = end - start;
@@ -68,16 +68,22 @@ int main() {
     };
 
     // Save times and statistics to a file
-    std::ofstream outFile("times_and_stats.txt");
+    std::ofstream outFile("times_and_stats_BFS.txt");
 
     auto saveTimesAndStats = [&](const std::string& name, const std::vector<double>& times) {
         double mean = calculateMean(times);
         double stdDev = calculateStdDev(times, mean);
         
         outFile << "Times for " << name << ":\n";
-        for (const auto& time : times) {
-            outFile << time << " seconds\n";
+        outFile << "[ ";
+        for (size_t i = 0; i < times.size(); ++i) {
+            outFile << times[i];
+            if (i != times.size() - 1) {
+                outFile << ", ";
+            }
         }
+        outFile << " ]\n";
+
         outFile << "Mean: " << mean << " seconds\n";
         outFile << "Standard Deviation: " << stdDev << " seconds\n\n";
     };
@@ -93,5 +99,3 @@ int main() {
 
     return 0;
 }
-
-// g++ test_bib_grafo.cpp
