@@ -30,7 +30,7 @@ private:
     int first_diameter = 0;                 // Diâmetro inicial
     pair<int,int> maior_dist = {-1,0};      // Vértice com maior distância e sua distância, para calculo do diâmetro pelas 2 bfs
     vector<vector<int>> adj;                // Lista de adjacências
-    vector<vector<int>> mat;                // Matriz de adjacências
+    vector<vector<bool>> mat;               // Matriz de adjacências
     vector<int> grau;                       // Vetor com os graus de cada vértice
     vector<bool> vis;                       // Vetor de visitados
     vector<int> pai;                        // Vetor com o vértice pai de cada vértice
@@ -43,8 +43,8 @@ public:
     // ~Grafo();
     void addEdge(int v1, int v2, int mode);
     vector<int> bfs_CompCon(int s);
-    void bfs(int s, int print);
-    void dfs(int s, int print);
+    void bfs(int s, int print = 0);
+    void dfs(int s, int print = 0);
     int distancia(int v, int u);
     int diametro();
     void geradortxt();
@@ -73,7 +73,7 @@ Grafo::Grafo(string FileName, int mode = 0) {
         int v1, v2;
         arquivo >> V;
         if (mode == 0) adj.resize(V);
-        else mat.resize(V, vector<int>(V, 0));
+        else mat.resize(V, vector<bool>(V, false));
         grau.resize(V,0);
         vis.resize(V,false);
         pai.resize(V,-2);
@@ -131,15 +131,15 @@ void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação
         adj[v2].push_back(v1); 
     }
     else{
-        mat[v1][v2] = 1;
-        mat[v2][v1] = 1;
+        mat[v1][v2] = true;
+        mat[v2][v1] = true;
     }
 }
 
 vector<int> Grafo::bfs_CompCon(int s) {
     vector<int> componente;
     maior_dist = {-1,0};
-    dist[s] = 0;
+    dist[s] = 0; 
     if (mode == 0){         // mode = 0 para representação em lista
         queue<int> q;
         vis[s] = true; componente.push_back(s);
@@ -177,11 +177,11 @@ vector<int> Grafo::bfs_CompCon(int s) {
     return componente;
 }
 
-void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
+void Grafo::bfs(int s, int print){      // print = 0 para printar e 1 para não printar
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     pai.clear(); pai.resize(V,-2);
     nivel.clear(); nivel.resize(V,-1);
-    nivel[s] = 0;
+    nivel[s] = 0; pai[s] = -1;
     vector<bool> visitados(V, false);
     if (mode == 0){         // mode = 0 para representação em lista
         queue<int> q;
@@ -235,7 +235,7 @@ void Grafo::bfs(int s, int print = 0){      // print = 0 para printar e 1 para n
     }
 }
 
-void Grafo::dfs(int s, int print = 0){      // print = 0 para printar e 1 para não printar
+void Grafo::dfs(int s, int print){      // print = 0 para printar e 1 para não printar
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     vector<bool> visitados(V, false);
     pai.clear(); pai.resize(V,-2);
@@ -243,7 +243,7 @@ void Grafo::dfs(int s, int print = 0){      // print = 0 para printar e 1 para n
 
     stack<int> pilha;
     pilha.push(s);
-    nivel[s] = 0;
+    nivel[s] = 0; pai[s] = -1;
 
     if (mode == 0) {                     // representação em lista
         while (!pilha.empty()){
@@ -296,24 +296,34 @@ int Grafo::distancia(int v, int u){         // v é o vértice inicial, e u é o
 
 #include <random>
 
-int Grafo::diametro(){
-    // int max_diameter = first_diameter; // Diâmetro inicial
-    // int num_samples = 100; // Número de amostras para estimar o diâmetro
+#include <chrono>
 
-    // // Inicializa o gerador de números aleatórios
-    // std::random_device rd;
-    // std::mt19937 gen(rd());
-    // std::uniform_int_distribution<> dis(1, V); // Gera um número aleatório entre 1 e V
+int Grafo::diametro() {
+    int max_diameter = first_diameter; // Diâmetro inicial
+    set<int> st;
 
-    // for (int i = 0; i < num_samples; ++i) {
-    //     int s = dis(gen); // Gera um número aleatório entre 0 e V-1
-    //     bfs(s,1);
-    //     int farthest = *max_element(nivel.begin(), nivel.end());
-    //     max_diameter = max(max_diameter, farthest);
-    // }
-    // cout << "-> Diâmetro inicial: " << first_diameter << endl;
-    // cout << "-> Diâmetro estimado: " << max_diameter << endl;
-    return first_diameter;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, V); // Gera um número aleatório entre 1 e V
+
+    auto start_time = std::chrono::steady_clock::now();
+    auto end_time = start_time + std::chrono::hours(1); // 1 hora
+
+    while (std::chrono::steady_clock::now() < end_time) {
+        int s;
+        do {
+            s = dis(gen); // Gera um número aleatório entre 1 e V
+        } while (st.find(s) != st.end());
+        bfs(s, 1);
+        if (maior_dist.second > max_diameter) {
+            max_diameter = maior_dist.second;
+            cout << "--> Novo diametro estimado: " << max_diameter << endl;
+        }
+    }
+
+    cout << "-> Diametro inicial: " << first_diameter << endl;
+    cout << "-> Diametro final estimado: " << max_diameter << endl;
+    return max_diameter;
 }
 
 void Grafo::geradortxt(){  // Criar arquivo de saída com as informações
@@ -362,23 +372,17 @@ void Grafo::printMatrizAdj() {
     }
 }
 
+
 int main() {
     cin.tie(NULL);
     ios_base::sync_with_stdio(false);
-
-
-    // string FileName; cin >> FileName;
-    string FileName = "grafo_1.txt";
     
-    // cin >> mode;     // 0 para lista e 1 para matriz
-    int mode = 1;
-
     clock_t start = clock();
 
-    Grafo g(FileName, mode);
-    // if(mode == 0) g.printListAdj(); 
-    // else g.printMatrizAdj();
-    
+    // Grafo g(FileName, mode);
+    // // if(mode == 0) g.printListAdj(); 
+    // // else g.printMatrizAdj();
+
     // cout << "Vertices: " << g.getV() << endl; 
     // cout << "Aresta: " << g.getA() << endl;
     // cout << "Grau maximo: " << g.getGrauMax() << endl; 
@@ -388,23 +392,34 @@ int main() {
 
     // for (int i = 0; i < g.getCompCon().size(); i++){
     //     cout << "Componente conexa " << i+1 << ": " << g.getCompCon()[i].first << " vertices" << endl;
-    //     // for (int j = 0; j < g.getCompCon()[i].first; j++){
-    //     //     cout << g.getCompCon()[i].second[j]+1 << " ";
-    //     // }
+    // //     // for (int j = 0; j < g.getCompCon()[i].first; j++){
+    // //     //     cout << g.getCompCon()[i].second[j]+1 << " ";
+    // //   // }
     // }
+    
+    // // g.bfs(17);
+    // // g.dfs(17);
+    // // cout << "Distancia: " << g.distancia(7, 14) << endl;
+
+    // // cout << "Diametro: " << g.diametro() << endl;
+
+
+    // Test diametro method for 6 graph files
+    for (int i = 1; i <= 6; ++i) {
+        std::string filename = "grafo_" + std::to_string(i) + ".txt";
+        Grafo g(filename, 0);
+        cout << endl;
+        int diametro = g.diametro();
+        std::cout << "Diametro for " << filename << ": " << diametro << std::endl;
+        cout << endl << endl;
+    }
+
 
     clock_t end = clock();
+
     cout << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
-
-    // g.bfs(17);
-    // g.dfs(17);
-    // cout << "Distancia: " << g.distancia(7, 14) << endl;
-
-    cout << "Diametro: " << g.diametro() << endl;
 
     return 0;   
 
 }
 
-// g++ bib_grafo.cpp -o bib_grafo -O2
-// ./bib_grafo
