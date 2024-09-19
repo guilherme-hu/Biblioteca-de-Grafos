@@ -62,7 +62,7 @@ categorias = ['grafo_1', 'grafo_2', 'grafo_3', 'grafo_4', 'grafo_5', 'grafo_6']
 
 # Criar o gráfico de barras
 plt.figure(figsize=(10, 5))
-plt.bar(categorias, medias, color=(139/255, 169/255, 1))  # Alterar a cor para verde
+plt.bar(categorias, medias, color=(98/255,137/255,238/255))  # Alterar a cor para verde
 
 # Adicionar título e rótulos aos eixos
 plt.title('Gráfico de Médias de Tempo da DFS por Lista de Adjacência')
