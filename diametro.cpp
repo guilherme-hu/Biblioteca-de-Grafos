@@ -307,10 +307,11 @@ int Grafo::diametro() {
     std::uniform_int_distribution<> dis(1, V); // Gera um número aleatório entre 1 e V
 
     auto start_time = std::chrono::steady_clock::now();
-    auto end_time = start_time + std::chrono::hours(1); // 1 hora
+    auto end_time = start_time + std::chrono::hours(2); //  2 hora
 
     while (std::chrono::steady_clock::now() < end_time) {
         int s;
+        if (st.size() == V) break;
         do {
             s = dis(gen); // Gera um número aleatório entre 1 e V
         } while (st.find(s) != st.end());
@@ -405,15 +406,15 @@ int main() {
 
 
     // Test diametro method for 6 graph files
-    for (int i = 1; i <= 6; ++i) {
+    for (int i = 3; i <= 6; ++i) {
         std::string filename = "grafo_" + std::to_string(i) + ".txt";
         Grafo g(filename, 0);
         cout << endl;
         int diametro = g.diametro();
-        std::cout << "Diametro for " << filename << ": " << diametro << std::endl;
         cout << endl << endl;
     }
-
+    // para o txt 1, inicial sempre da 4, e a resposta é 5 -> bom fazer o randomizador
+    // para o txt 2, inicial acerta a resposta correta, 20.
 
     clock_t end = clock();
 
