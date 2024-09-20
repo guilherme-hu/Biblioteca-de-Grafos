@@ -16,7 +16,7 @@ using namespace std;
 #include <utility>  //Biblioteca com implementação do pair
 #include <set> //Biblioteca com implementação do set
 #include <deque> //Biblioteca com implementação de deque
-#include <cstdlib> //Biblioteca para usar o system
+#include <random> //Biblioteca com implementação de números aleatórios
 
 #define INF 0x3f3f3f3f //Define um valor infinito
 
@@ -304,7 +304,6 @@ int Grafo::diametro(){
     return max_diameter;
 }
 
-#include <random>
 int Grafo::diametro_aprox() {
     // Calcula o diâmetro do grafo de forma aproximada
     int max_diameter = first_diameter; // Diâmetro inicial
