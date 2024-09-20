@@ -118,16 +118,13 @@ int main() {
 
     for (int i = 0; i < g.getCompCon().size(); i++){
         cout << "Componente conexa " << i+1 << ": " << g.getCompCon()[i].first << " vertices" << endl;
-    //     // for (int j = 0; j < g.getCompCon()[i].first; j++){
-    //     //     cout << g.getCompCon()[i].second[j]+1 << " ";
-    //   // }
     }
     
-    // g.bfs(17);
-    // g.dfs(17);
-    // cout << "Distancia: " << g.distancia(7, 14) << endl;
+    g.bfs(17);
+    g.dfs(17);
+    cout << "Distancia: " << g.distancia(7, 14) << endl;
 
-    // cout << "Diametro: " << g.diametro() << endl;
+    cout << "Diametro: " << g.diametro() << endl;
 
     clock_t end = clock();
 
