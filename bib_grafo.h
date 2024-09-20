@@ -387,6 +387,7 @@ void Grafo::printCompCon(int print = 0){  // print = 0 para printar todos os ver
             for (int j = 0; j < compCon[i].first; j++){
                 cout << compCon[i].second[j]+1 << " ";
             }
+            cout << endl;
         }
     }
 }
