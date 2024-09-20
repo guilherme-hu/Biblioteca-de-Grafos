@@ -4,67 +4,67 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-#include <iostream> //Biblioteca para o uso do cout
-#include <stdio.h> //Biblioteca para usar o get char
-#include <ctime> //Biblioteca para medir o tempo de execução
-#include <fstream> //Biblioteca para escrita e leitura de arquivos txt
-#include <stack> //Biblioteca com implementação de pilha
-#include <queue> //Biblioteca com implementação de fila
-#include <vector> //Biblioteca com implementação de array dinâmico
-#include <algorithm> //Biblioteca com implementação do sort
-#include <string.h> //Biblioteca com implementação do memset
-#include <utility>  //Biblioteca com implementação do pair
-#include <set> //Biblioteca com implementação do set
-#include <deque> //Biblioteca com implementação de deque
-#include <random> //Biblioteca com implementação de números aleatórios
+#include <iostream>     // Biblioteca para o uso do cout
+#include <stdio.h>      // Biblioteca para usar o get char
+#include <ctime>        // Biblioteca para medir o tempo de execução
+#include <fstream>      // Biblioteca para escrita e leitura de arquivos txt
+#include <stack>        // Biblioteca com implementação de pilha
+#include <queue>        // Biblioteca com implementação de fila
+#include <vector>       // Biblioteca com implementação de array dinâmico
+#include <algorithm>    // Biblioteca com implementação do sort
+#include <string.h>     // Biblioteca com implementação do memset
+#include <utility>      // Biblioteca com implementação do pair
+#include <set>          // Biblioteca com implementação do set
+#include <deque>        // Biblioteca com implementação de deque
+#include <random>       // Biblioteca com implementação de números aleatórios
 
-#define INF 0x3f3f3f3f //Define um valor infinito
+#define INF 0x3f3f3f3f  // Define um valor infinito
 
 
 class Grafo {
 private:  
-    int V;                                  // Número de vértices
-    int A = 0;                              // Número de arestas
-    int mode;                               // 0 para lista e 1 para matriz
-    int grauMax;
-    int grauMin;
-    double grauMediano;
-    double grauMedio;
-    int first_diameter = 0;                 // Diâmetro inicial
-    pair<int,int> maior_dist = {-1,0};      // Vértice com maior distância e sua distância, para calculo do diâmetro pelas 2 bfs
-    vector<vector<int>> adj;                // Lista de adjacências
-    vector<vector<bool>> mat;               // Matriz de adjacências
-    vector<int> grau;                       // Vetor com os graus de cada vértice
-    vector<bool> vis;                       // Vetor de visitados
-    vector<int> pai;                        // Vetor com o vértice pai de cada vértice
-    vector<int> nivel;                      // Vetor com o nível de cada vértice
-    vector<int> dist;                       // Vetor com o nível de cada vértice (compcon)
-    vector<pair<int,vector<int>>> compCon;  // Componentes conexas, com o tamanho e os vértices de cada uma
-    void addEdge(int v1, int v2, int mode);
-    vector<int> bfs_CompCon(int s);
+    int V;                                      // Número de vértices
+    int A = 0;                                  // Número de arestas
+    int mode;                                   // 0 para lista e 1 para matriz
+    int grauMax;                                // Grau máximo
+    int grauMin;                                // Grau mínimo
+    double grauMediano;                         // Grau mediano
+    double grauMedio;                           // Grau médio
+    int first_diameter = 0;                     // Diâmetro inicial, calculado pela BFS dupla
+    pair<int,int> maior_dist = {-1,0};          // Vértice com maior distância a raiz da árvore e sua respectiva distância, para cálculo do diâmetro pela BFS dupla
+    vector<vector<int>> adj;                    // Lista de adjacências
+    vector<vector<bool>> mat;                   // Matriz de adjacências
+    vector<int> grau;                           // Vetor com os graus de cada vértice
+    vector<bool> vis;                           // Vetor de visitados
+    vector<int> pai;                            // Vetor com o vértice pai de cada vértice
+    vector<int> nivel;                          // Vetor com o nível de cada vértice
+    vector<int> dist;                           // Vetor com o nível de cada vértice, para uso CompCon
+    vector<pair<int,vector<int>>> compCon;      // Componentes conexas, com o tamanho e os vértices de cada uma
+    void addEdge(int v1, int v2, int mode);     // Adiciona uma aresta entre os vértices v1 e v2 a estrutura de dados do grafo
+    vector<int> bfs_CompCon(int s);             // BFS para achar as componentes conexas
 
 public:
-    Grafo(string FileName, int mode);
-    void bfs(int s, int print = 0);
-    void dfs(int s, int print = 0);
-    int distancia(int v, int u);
-    int diametro();
-    int diametro_aprox();
-    void geradortxt();
-    size_t getAdjMemoryUsage() const;
-    size_t getMatMemoryUsage() const;
-    void printListAdj();
-    void printMatrizAdj();
+    Grafo(string FileName, int mode);           // Construtor da classe
+    void bfs(int s, int print = 0);             // Método que realiza a BFS para um vértice s, pode ou não gerar um txt com as informações da BFS
+    void dfs(int s, int print = 0);             // Método que realiza a DFS para um vértice s, pode ou não gerar um txt com as informações da DFS
+    int distancia(int v, int u);                // Método que calcula a distância entre os vértices v e u
+    int diametro();                             // Método que calcula o diâmetro do grafo. Para grafos grandes, pode ser muito custoso, por isso, recoendamos usar o método diametro_aprox
+    int diametro_aprox();                       // Método que calcula o diâmetro do grafo de forma aproximada
+    void geradortxt();                          // Método que gera um arquivo de saída com as informações gerais do grafo
+    size_t getAdjMemoryUsage() const;           // Método que calcula a memória usada pela representação em lista
+    size_t getMatMemoryUsage() const;           // Método que calcula a memória usada pela representação em matriz
+    void printListAdj();                        // Método que printa a lista de adjacências
+    void printMatrizAdj();                      // Método que printa a matriz de adjacências
+    void printCompCon(int print);               // Método que printa o numero de componentes conexas e o tamanho de cada uma, pode ou não printar todos os vértices de cada componente
 
 
-    // Métodos getters
-    int getV() const { return V; }
-    int getA() const { return A; }
-    int getGrauMax() const { return grauMax; }
-    int getGrauMin() const { return grauMin; }
-    double getGrauMediano() const { return grauMediano; }
-    double getGrauMedio() const { return grauMedio; }
-    vector<pair<int,vector<int>>> getCompCon() const { return compCon; }
+    // Métodos getters  
+    int getV() const { return V; }                                          // Retorna o número de vértices
+    int getA() const { return A; }                                          // Retorna o número de arestas
+    int getGrauMax() const { return grauMax; }                              // Retorna o grau máximo
+    int getGrauMin() const { return grauMin; }                              // Retorna o grau mínimo
+    double getGrauMediano() const { return grauMediano; }                   // Retorna o grau mediano
+    double getGrauMedio() const { return grauMedio; }                       // Retorna o grau médio
 };
 
 
@@ -118,6 +118,7 @@ Grafo::Grafo(string FileName, int mode = 0) {
     }
     std::sort(compCon.begin(),compCon.end(),std::greater< std::pair<int,std::vector<int>> >());
     
+    // Gera arquivo de saída
     geradortxt();
 }
 
@@ -134,7 +135,7 @@ void Grafo::addEdge(int v1, int v2, int mode) { // mode = 0 para representação
     }
 }
 
-vector<int> Grafo::bfs_CompCon(int s) {
+vector<int> Grafo::bfs_CompCon(int s) { // Retorna um vetor com os vértices pertencentes a uma componente conexa
     vector<int> componente;
     maior_dist = {-1,0};
     dist[s] = 0; 
@@ -175,7 +176,7 @@ vector<int> Grafo::bfs_CompCon(int s) {
     return componente;
 }
 
-void Grafo::bfs(int s, int print){      // print = 0 para printar e 1 para não printar
+void Grafo::bfs(int s, int print){          // print = 0 para printar e 1 para não printar informações da arvore geradora da BFS
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     pai.clear(); pai.resize(V,-2);
     nivel.clear(); nivel.resize(V,-1);
@@ -233,7 +234,7 @@ void Grafo::bfs(int s, int print){      // print = 0 para printar e 1 para não 
     }
 }
 
-void Grafo::dfs(int s, int print){      // print = 0 para printar e 1 para não printar
+void Grafo::dfs(int s, int print){          // print = 0 para printar e 1 para não printar informações da arvore geradora da DFS
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     vector<bool> visitados(V, false);
     pai.clear(); pai.resize(V,-2);
@@ -243,7 +244,7 @@ void Grafo::dfs(int s, int print){      // print = 0 para printar e 1 para não 
     pilha.push(s);
     nivel[s] = 0; pai[s] = -1;
 
-    if (mode == 0) {                     // representação em lista
+    if (mode == 0) { // representação em lista
         while (!pilha.empty()){
             int v = pilha.top();
             pilha.pop();
@@ -257,7 +258,7 @@ void Grafo::dfs(int s, int print){      // print = 0 para printar e 1 para não 
         }
     }
 
-    else {                     // representação em matriz
+    else {      // representação em matriz
         while (!pilha.empty()){
             int v = pilha.top();
             pilha.pop();
@@ -295,9 +296,8 @@ int Grafo::distancia(int v, int u){         // v é o vértice inicial, e u é o
 
 int Grafo::diametro(){
     // Calcula o diâmetro do grafo. Para grafos grandes, pode ser muito custoso, por isso, recoendamos usar o método diametro_aprox
-    int max_diameter = first_diameter; // Diâmetro inicial
+    int max_diameter = first_diameter; // Diâmetro inicial, calculado pela BFS dupla
     for (int i = 0; i < V; ++i) {
-        // int s = dis(gen); // Gera um número aleatório entre 0 e V-1
         bfs(i+1,1);
         max_diameter = max(max_diameter, maior_dist.second);
     }
@@ -305,8 +305,8 @@ int Grafo::diametro(){
 }
 
 int Grafo::diametro_aprox() {
-    // Calcula o diâmetro do grafo de forma aproximada
-    int max_diameter = first_diameter; // Diâmetro inicial
+    // Calcula o diâmetro do grafo de forma aproximada, usando a BFS dupla e em seguida fazendo uma amostragem de vértices aleatórios para melhorar a estimativa
+    int max_diameter = first_diameter; // Diâmetro inicial, calculado pela BFS dupla
     set<int> st;
 
     std::random_device rd;
@@ -320,9 +320,9 @@ int Grafo::diametro_aprox() {
         int s;
         if (st.size() == V) break;
         do {
-            s = dis(gen); // Gera um número aleatório entre 1 e V
-        } while (st.find(s) != st.end());
-        st.insert(s); // Insere o número gerado no set
+            s = dis(gen);                   // Gera um número aleatório entre 1 e V
+        } while (st.find(s) != st.end());   // Enquanto o número gerado já estiver no set, gera outro
+        st.insert(s);                       // Insere o número gerado no set
         bfs(s, 1);
         if (maior_dist.second > max_diameter) {
             max_diameter = maior_dist.second;
@@ -360,7 +360,7 @@ void Grafo::geradortxt(){  // Criar arquivo de saída com as informações
     }
 }
 
-void Grafo::printListAdj() {
+void Grafo::printListAdj() {  // Printa a lista de adjacências
     for (int i = 0; i < V; ++i) {
         cout << "Vertice " << i+1 << ":";
         for (int vizinho : adj[i]) {
@@ -370,13 +370,24 @@ void Grafo::printListAdj() {
     }
 }
 
-void Grafo::printMatrizAdj() {
+void Grafo::printMatrizAdj() {  // Printa a matriz de adjacências
     cout << "Matriz de Adjacencias:" << endl;
     for (int i = 0; i < V; ++i) {
         for (int j = 0; j < V; ++j) {
             cout << mat[i][j] << " ";
         }
         cout << endl;
+    }
+}
+
+void Grafo::printCompCon(int print = 0){  // print = 0 para printar todos os vertices pertencentes a cada componente e 1 para não printar
+    for (int i = 0; i < compCon.size(); i++){
+        cout << "Componente conexa " << i+1 << ": " << compCon[i].first << " vertices" << endl;
+        if(print == 1){
+            for (int j = 0; j < compCon[i].first; j++){
+                cout << compCon[i].second[j]+1 << " ";
+            }
+        }
     }
 }
 
@@ -396,4 +407,4 @@ size_t Grafo::getMatMemoryUsage() const {
     return totalSize;
 }
 
-#endif // GRAFO_H
+#endif 
