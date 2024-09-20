@@ -40,11 +40,10 @@ private:
     vector<int> nivel;                      // Vetor com o nível de cada vértice
     vector<int> dist;                       // Vetor com o nível de cada vértice (compcon)
     vector<pair<int,vector<int>>> compCon;  // Componentes conexas, com o tamanho e os vértices de cada uma
+    void addEdge(int v1, int v2, int mode);
 
 public:
     Grafo(string FileName, int mode);
-    // ~Grafo();
-    void addEdge(int v1, int v2, int mode);
     vector<int> bfs_CompCon(int s);
     void bfs(int s, int print = 0);
     void dfs(int s, int print = 0);
