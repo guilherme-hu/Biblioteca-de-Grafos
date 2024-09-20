@@ -6,31 +6,31 @@
 #include <vector>
 #include <fstream>
 
-void testDFS(const std::string& filename, std::vector<double>& times) {
-    std::ifstream file(filename);
-    int first_vertex;
-    file >> first_vertex;
-    file.close();
+// void testDFS(const std::string& filename, std::vector<double>& times) {
+//     std::ifstream file(filename);
+//     int first_vertex;
+//     file >> first_vertex;
+//     file.close();
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, first_vertex);
+//     std::random_device rd;
+//     std::mt19937 gen(rd());
+//     std::uniform_int_distribution<> dis(1, first_vertex);
 
-    Grafo g(filename, 0);
+//     Grafo g(filename, 0);
 
-    for (int i = 0; i < 100; ++i) {
-        int random_vertex = dis(gen);
+//     for (int i = 0; i < 100; ++i) {
+//         int random_vertex = dis(gen);
 
-        auto start = std::chrono::high_resolution_clock::now();
-        g.dfs(random_vertex);
-        auto end = std::chrono::high_resolution_clock::now();
+//         auto start = std::chrono::high_resolution_clock::now();
+//         g.dfs(random_vertex);
+//         auto end = std::chrono::high_resolution_clock::now();
 
-        std::chrono::duration<double> duration = end - start;
-        times.push_back(duration.count());
-    }
-    std::cout << "testDFS for " << filename << " passed 100 times!" << std::endl;
-    cout << endl;
-}
+//         std::chrono::duration<double> duration = end - start;
+//         times.push_back(duration.count());
+//     }
+//     std::cout << "testDFS for " << filename << " passed 100 times!" << std::endl;
+//     cout << endl;
+// }
 
 // int main() {
 
