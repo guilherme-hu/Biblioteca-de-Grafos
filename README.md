@@ -16,8 +16,8 @@ Grafo G (arquivo txt, mode)
 G.bfs(int vértice inicial) // retorna um arquivo txt com a árvore geradora criada pela bfs
 G.dfs(int vértice inicial) // retorna um arquivo txt com a árvore geradora criada pela dfs
 G.distancia(int vértice 1, int vértice 2) // retorna a distância entre os vértices 1 e 2, ou, caso não seja possível um caminho entre eles, -1 é retornado
-G.diametro() // retorna o diâmetro exato do grafo. Para grafos muito grandes, o tempo de cálculo é enorme,
-	// então se recomenda usar o método diametro_aprox, que calcula o diâmetro aproximado de modo bem veloz
+G.diametro() 	// retorna o diâmetro exato do grafo. Para grafos muito grandes, o tempo de cálculo é enorme,
+		// então se recomenda usar o método diametro_aprox, que calcula o diâmetro aproximado de modo bem veloz
 G.diametro_aprox() // retorna o diâmetro aproximado, bem mais rápido que o método diâmetro normal
 ```
 
