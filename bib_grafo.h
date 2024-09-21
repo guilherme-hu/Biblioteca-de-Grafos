@@ -51,8 +51,6 @@ public:
     int diametro();                             // Método que calcula o diâmetro do grafo. Para grafos grandes, pode ser muito custoso, por isso, recoendamos usar o método diametro_aprox
     int diametro_aprox();                       // Método que calcula o diâmetro do grafo de forma aproximada
     void geradortxt();                          // Método que gera um arquivo de saída com as informações gerais do grafo
-    size_t getAdjMemoryUsage() const;           // Método que calcula a memória usada pela representação em lista
-    size_t getMatMemoryUsage() const;           // Método que calcula a memória usada pela representação em matriz
     void printListAdj();                        // Método que printa a lista de adjacências
     void printMatrizAdj();                      // Método que printa a matriz de adjacências
     void printCompCon(int print);               // Método que printa o numero de componentes conexas e o tamanho de cada uma, pode ou não printar todos os vértices de cada componente
@@ -65,6 +63,8 @@ public:
     int getGrauMin() const { return grauMin; }                              // Retorna o grau mínimo
     double getGrauMediano() const { return grauMediano; }                   // Retorna o grau mediano
     double getGrauMedio() const { return grauMedio; }                       // Retorna o grau médio
+    size_t getAdjMemoryUsage() const;           // Método que calcula a memória usada pela representação em lista
+    size_t getMatMemoryUsage() const;           // Método que calcula a memória usada pela representação em matriz
 };
 
 
