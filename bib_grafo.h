@@ -380,10 +380,10 @@ void Grafo::printMatrizAdj() {  // Printa a matriz de adjacências
     }
 }
 
-void Grafo::printCompCon(int print = 0){  // print = 0 para printar todos os vertices pertencentes a cada componente e 1 para não printar
+void Grafo::printCompCon(int print = 1){  // print = 0 para printar todos os vertices pertencentes a cada componente e 1 para não printar
     for (int i = 0; i < compCon.size(); i++){
         cout << "Componente conexa " << i+1 << ": " << compCon[i].first << " vertices" << endl;
-        if(print == 1){
+        if(print == 0){
             for (int j = 0; j < compCon[i].first; j++){
                 cout << compCon[i].second[j]+1 << " ";
             }
