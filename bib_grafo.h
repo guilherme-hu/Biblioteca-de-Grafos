@@ -57,14 +57,14 @@ public:
 
 
     // Métodos getters  
-    int getV() const { return V; }                                          // Retorna o número de vértices
-    int getA() const { return A; }                                          // Retorna o número de arestas
-    int getGrauMax() const { return grauMax; }                              // Retorna o grau máximo
-    int getGrauMin() const { return grauMin; }                              // Retorna o grau mínimo
-    double getGrauMediano() const { return grauMediano; }                   // Retorna o grau mediano
-    double getGrauMedio() const { return grauMedio; }                       // Retorna o grau médio
-    size_t getAdjMemoryUsage() const;           // Método que calcula a memória usada pela representação em lista
-    size_t getMatMemoryUsage() const;           // Método que calcula a memória usada pela representação em matriz
+    int getV() const { return V; }                             // Retorna o número de vértices
+    int getA() const { return A; }                             // Retorna o número de arestas
+    int getGrauMax() const { return grauMax; }                 // Retorna o grau máximo
+    int getGrauMin() const { return grauMin; }                 // Retorna o grau mínimo
+    double getGrauMediano() const { return grauMediano; }      // Retorna o grau mediano
+    double getGrauMedio() const { return grauMedio; }          // Retorna o grau médio
+    size_t getAdjMemoryUsage() const;                          // Método que calcula a memória usada pela representação em lista
+    size_t getMatMemoryUsage() const;                          // Método que calcula a memória usada pela representação em matriz
 };
 
 
