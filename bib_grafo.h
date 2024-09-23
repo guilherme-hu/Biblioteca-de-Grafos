@@ -176,7 +176,7 @@ vector<int> Grafo::bfs_CompCon(int s) { // Retorna um vetor com os vértices per
     return componente;
 }
 
-void Grafo::bfs(int s, int print = 0){          // print = 0 para printar e 1 para não printar informações da arvore geradora da BFS
+void Grafo::bfs(int s, int print){          // print = 0 para printar e 1 para não printar informações da arvore geradora da BFS
     s--;                                        // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     pai.clear(); pai.resize(V,-2);
     nivel.clear(); nivel.resize(V,-1);
@@ -234,7 +234,7 @@ void Grafo::bfs(int s, int print = 0){          // print = 0 para printar e 1 pa
     }
 }
 
-void Grafo::dfs(int s, int print = 0){          // print = 0 para printar e 1 para não printar informações da arvore geradora da DFS
+void Grafo::dfs(int s, int print){          // print = 0 para printar e 1 para não printar informações da arvore geradora da DFS
     s--;                                    // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     vector<bool> visitados(V, false);
     pai.clear(); pai.resize(V,-2);
