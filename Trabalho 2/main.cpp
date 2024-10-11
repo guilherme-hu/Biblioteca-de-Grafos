@@ -14,7 +14,7 @@ int main() {
     
     clock_t start = clock();
 
-    string FileName = "grafo_W_1.txt";       // Nome do arquivo txt dentro da pasta "data_1"
+    string FileName = "grafo_W_1.txt";      
     int mode = 1;                               // 0 para lista de adjacência e 1 para matriz de adjacência
 
     GrafoComPeso g(FileName, mode);                    // Criação do objeto grafo
