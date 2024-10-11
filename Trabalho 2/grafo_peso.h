@@ -11,8 +11,9 @@ protected:
 public:
     GrafoComPeso(string FileName, int mode);                // Construtor da classe
     void addEdge(int v1, int v2, double peso, int mode);    // Método que adiciona aresta com peso
-    void Dijsktra(int s);                                   // Método que realiza o algoritmo de Dijsktra
+    void Dijkstra(int s, int heap = 0);                     // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
     void Prim(int s);                                       // Método que realiza o algoritmo de Prim, para montar uma MST do grafo
+    int distancia(int v, int u) const;                      // Método que calcula a distância entre os vértices v e u
     void printListAdj() const;                              // Método que imprime a lista de adjacências
     void printMatrizAdj() const;                            // Método que imprime a matriz de adjacências
     size_t getAdjMemoryUsage() const;                       // Método que obtém memória (calculada) usada pela representação em lista
@@ -145,10 +146,20 @@ vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vérti
 }
 
 // Método que realiza o algoritmo de Dijsktra
-void GrafoComPeso::Dijsktra(int s){
+void GrafoComPeso::Dijkstra(int s, int heap){
     if (negativo) {
         cout << "O grafo possui arestas com peso negativo, a biblioteca ainda nao implementa caminhos minimos com pesos negativos!" << endl;
         return;
+    }
+    if (heap == 0) {
+        // Implementar sem heap
+    }
+
+    else {
+        // Implementar com heap -> usamos priority queue, equivalente a heap
+        vector<double> dist(V, INF);
+        vector<bool> visited(V, false);
+        priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> h;
     }
     return;
 }
@@ -156,6 +167,11 @@ void GrafoComPeso::Dijsktra(int s){
 // Método que realiza o algoritmo de Prim
 void GrafoComPeso::Prim(int s){
     return;
+}
+
+int GrafoComPeso::distancia(int v, int u) const {
+    const_cast<GrafoComPeso*>(this)->Dijkstra(v, 1); //Como distancia ta definido na classe pai, precisamos chamar um metodo de um filho, isso é o const_cast
+    return dist[u-1];
 }
 
 // Método que imprime a lista de adjacências
