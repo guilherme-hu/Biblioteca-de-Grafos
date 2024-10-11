@@ -48,7 +48,7 @@ public:
     Grafo(string FileName, int mode);           // Construtor da classe, com parâmetros
     void bfs(int s, int print = 0);             // Método que realiza a BFS para um vértice s, pode ou não gerar um txt com as informações da BFS
     void dfs(int s, int print = 0);             // Método que realiza a DFS para um vértice s, pode ou não gerar um txt com as informações da DFS
-    int distancia(int v, int u);                // Método que calcula a distância entre os vértices v e u
+    virtual int distancia(int v, int u);        // Método que calcula a distância entre os vértices v e u
     int diametro();                             // Método que calcula o diâmetro do grafo. Para grafos grandes, pode ser muito custoso, por isso, recoendamos usar o método diametro_aprox
     int diametro_aprox();                       // Método que calcula o diâmetro do grafo de forma aproximada
     void geradortxt();                          // Método que gera um arquivo de saída com as informações gerais do grafo
