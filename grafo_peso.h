@@ -1,4 +1,4 @@
-#include "bib_grafo.h"
+#include "grafo.h"
 
 
 class GrafoComPeso : public Grafo {
@@ -6,15 +6,18 @@ protected:
     vector<vector<pair<double, int>>> adjPeso; // Lista de adjacências com pesos (peso, vértice)
     vector<vector<double>> matPeso;            // Matriz de adjacências com pesos
     bool negativo = false;                     // Variável para verificar se existe aresta com peso negativo
+    vector<int> bfs_CompCon(int s);            // Método que realiza a busca em largura para componentes conexas
 
 public:
     GrafoComPeso(string FileName, int mode);                // Construtor da classe
     void addEdge(int v1, int v2, double peso, int mode);    // Método que adiciona aresta com peso
+    void Dijsktra(int s);                                   // Método que realiza o algoritmo de Dijsktra
+    void Prim(int s);                                       // Método que realiza o algoritmo de Prim, para montar uma MST do grafo
     void printListAdj() const;                              // Método que imprime a lista de adjacências
     void printMatrizAdj() const;                            // Método que imprime a matriz de adjacências
     size_t getAdjMemoryUsage() const;                       // Método que obtém memória (calculada) usada pela representação em lista
     size_t getMatMemoryUsage() const;                       // Método que obtém memória (calculada) usada pela representação em matriz
-};
+}; 
 
 // Constructor
 GrafoComPeso::GrafoComPeso(string FileName, int mode) {
@@ -24,6 +27,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
     this->A = 0;
     this->grau.clear();
     this->vis.clear();
+    this->vis.resize(V, false);
     this->pai.clear();
     this->nivel.clear();
     this->dist.clear();
@@ -53,6 +57,30 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
         arquivo.close();
         cout << "-> Dados do txt de grafo com pesos '" << FileName << "' pegos com sucesso!" << endl;
     }
+
+    // Cálculo dos graus
+    vector<int> graus = grau;
+    std::sort(graus.begin(), graus.end());
+    grauMax = graus[V-1];
+    grauMin = graus[0];
+    if (V % 2 == 0) grauMediano = (graus[V/2] + graus[V/2 - 1])/2;
+    else grauMediano = graus[V/2];
+    grauMedio = 2*A/V;  
+
+    // Cálculo das componentes conexas
+    for (int i = 0; i < V; i++){
+        if(vis[i] == 0){
+            vector<int> aux = bfs_CompCon(i);
+            compCon.push_back({aux.size(), aux});
+
+            // // Cálculo do diâmetro
+            // // -> bfs_compcon acha o vertice com maior nivel para um vertice aleatorio. fazer bfs a partir desse vertice para achar o diametro aproximado
+            // bfs(maior_dist.first+1,1);              
+            // // cout << maior_dist.first+1 << " " << maior_dist.second << endl;                     
+            // first_diameter = max(first_diameter, maior_dist.second);    
+        }
+    }
+    std::sort(compCon.begin(),compCon.end(),std::greater< std::pair<int,std::vector<int>> >());
 }
 
 // Método que adiciona aresta com peso
@@ -67,6 +95,67 @@ void GrafoComPeso::addEdge(int v1, int v2, double peso, int mode) {
         matPeso[v1][v2] = peso;
         matPeso[v2][v1] = peso;
     }
+}
+
+
+// Método que realiza a busca em largura para componentes conexas
+vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vértices pertencentes a uma componente conexa
+    vector<int> componente;
+    maior_dist = make_pair(-1, 0);
+    this->dist[s] = 0;
+    if (mode == 0) { // mode = 0 para representação em lista
+        queue<int> q;
+        this->vis[s] = true;
+        componente.push_back(s);
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (size_t i = 0; i < adjPeso[u].size(); ++i) {
+                int v = adjPeso[u][i].second;
+                if (!vis[v]) {
+                    this->vis[v] = true;
+                    componente.push_back(v);
+                    this->dist[v] = this->dist[u] + 1;
+                    if (this->dist[v] >= maior_dist.second) maior_dist = std::make_pair(v, this->dist[v]);
+                    q.push(v);
+                }
+            }
+        }
+    } else { // mode = 1 para representação em matriz
+        queue<int> q;
+        vis[s] = true;
+        componente.push_back(s);
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v = 0; v < V; ++v) {
+                if (matPeso[u][v] != INF && !vis[v]) {
+                    vis[v] = true;
+                    componente.push_back(v);
+                    dist[v] = dist[u] + 1;
+                    if (dist[v] >= maior_dist.second) maior_dist = {v, dist[v]};
+                    q.push(v);
+                }
+            }
+        }
+    }
+    return componente;
+}
+
+// Método que realiza o algoritmo de Dijsktra
+void GrafoComPeso::Dijsktra(int s){
+    if (negativo) {
+        cout << "O grafo possui arestas com peso negativo, a biblioteca ainda nao implementa caminhos minimos com pesos negativos!" << endl;
+        return;
+    }
+    return;
+}
+
+// Método que realiza o algoritmo de Prim
+void GrafoComPeso::Prim(int s){
+    return;
 }
 
 // Método que imprime a lista de adjacências
