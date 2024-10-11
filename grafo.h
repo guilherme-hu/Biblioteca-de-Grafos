@@ -1,5 +1,5 @@
-#ifndef BIB_GRAFO_H
-#define BIB_GRAFO_H
+#ifndef GRAFO_H
+#define GRAFO_H
 
 
 #include <bits/stdc++.h>
@@ -41,7 +41,7 @@ protected:
     vector<int> dist;                           // Vetor com o nível de cada vértice, para uso CompCon
     vector<pair<int,vector<int>>> compCon;      // Componentes conexas, com o tamanho e os vértices de cada uma
     void addEdge(int v1, int v2, int mode);     // Adiciona uma aresta entre os vértices v1 e v2 a estrutura de dados do grafo
-    vector<int> bfs_CompCon(int s);             // BFS para achar as componentes conexas
+    virtual vector<int> bfs_CompCon(int s);     // BFS para achar as componentes conexas
 
 public:
     Grafo();                                    // Construtor padrão, para uso nas subclasses
