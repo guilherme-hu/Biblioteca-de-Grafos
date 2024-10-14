@@ -76,6 +76,10 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
             vector<int> aux = bfs_CompCon(i);
             compCon.push_back({aux.size(), aux});
 
+            for (int j : aux){
+                cout << j << " ";
+            }
+
             // // Cálculo do diâmetro
             // // -> bfs_compcon acha o vertice com maior nivel para um vertice aleatorio. fazer bfs a partir desse vertice para achar o diametro aproximado
             // bfs(maior_dist.first+1,1);              
@@ -84,6 +88,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
         }
     }
     std::sort(compCon.begin(),compCon.end(),std::greater< std::pair<int,std::vector<int>> >());
+
 }
 
 // Método que adiciona aresta com peso
@@ -125,7 +130,8 @@ vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vérti
                 }
             }
         }
-    } else { // mode = 1 para representação em matriz
+    } 
+    else { // mode = 1 para representação em matriz
         queue<int> q;
         vis[s] = true;
         componente.push_back(s);
@@ -155,16 +161,21 @@ void GrafoComPeso::Dijkstra(int s, int heap){
         return;
     }
 
+    // Reiniciando os vetores da BFS_CompCon 
+    this->vis.assign(V, false); 
+    this->dist.assign(V, INF); 
+
+    // Chamada do método bfs_CompCon
     vector<int> componente = bfs_CompCon(s); 
     int componente_size = componente.size(); // encontrar o tamanho da componente
 
-    cout << "Vc chegou no dijkstra antes do if do heap \n";
-    //cout << "Componente: ";
-    //for (int i : componente){
-    //    cout << i << ", ";
-    //}
-    //cout << endl;
-    //cout << "O tamanho da componente: " << componente_size << endl;
+    // cout << "Vc chegou no dijkstra antes do if do heap \n";
+    cout << "Componente: ";
+    for (int i : componente){
+       cout << i << ", ";
+    }
+    cout << endl;
+    cout << "O tamanho da componente: " << componente_size << endl;
 
     if (heap == 0) { // versão sem heap
         // Implementar sem heap
@@ -195,7 +206,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     }
                 }
             }
-            cout << "Vc chegou no Dijkstra lista adj, sem heap \n";
+            // cout << "Vc chegou no Dijkstra lista adj, sem heap \n";
         }
 
         else { // matriz
@@ -220,7 +231,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     }
                 }
             }
-            cout << "Vc chegou no Dijkstra matriz, sem heap \n";
+            // cout << "Vc chegou no Dijkstra matriz, sem heap \n";
         }
 
     }
@@ -240,7 +251,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
         if (mode==0) { // list adj
             while (!h.empty()){ // fazemos isso para todos os vértices da componente
                 
-                cout << "Vc chegou no while da lista adj" << count++ << endl;
+                // cout << "Vc chegou no while da lista adj" << count++ << endl;
 
                 int u,pai_u;
                 double dist_u;
@@ -263,7 +274,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     h.push({distPeso[u]+peso_uv,{v,u}});
                 }
             }
-            cout << "Vc chegou no Dijkstra lista adj, com heap \n";
+            // cout << "Vc chegou no Dijkstra lista adj, com heap \n";
         }
 
         else { // matriz
@@ -292,7 +303,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     }
                 }
             }
-            cout << "Vc chegou no Dijkstra matriz, com heap \n";
+            // cout << "Vc chegou no Dijkstra matriz, com heap \n";
         }
 
     }
