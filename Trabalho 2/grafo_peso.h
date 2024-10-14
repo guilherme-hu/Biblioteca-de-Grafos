@@ -7,17 +7,18 @@ protected:
     vector<vector<double>> matPeso;            // Matriz de adjacências com pesos
     bool negativo = false;                     // Variável para verificar se existe aresta com peso negativo
     vector<int> bfs_CompCon(int s);            // Método que realiza a busca em largura para componentes conexas
+    vector<double> distPeso;                   // Variável para registar as distâncias em um grafo com peso //--------DISTPESO-----------
 
 public:
-    GrafoComPeso(string FileName, int mode);                // Construtor da classe
-    void addEdge(int v1, int v2, double peso, int mode);    // Método que adiciona aresta com peso
-    void Dijkstra(int s, int heap = 0);                     // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
-    void Prim(int s);                                       // Método que realiza o algoritmo de Prim, para montar uma MST do grafo
-    int distancia(int v, int u) const;                      // Método que calcula a distância entre os vértices v e u
-    void printListAdj() const;                              // Método que imprime a lista de adjacências
-    void printMatrizAdj() const;                            // Método que imprime a matriz de adjacências
-    size_t getAdjMemoryUsage() const;                       // Método que obtém memória (calculada) usada pela representação em lista
-    size_t getMatMemoryUsage() const;                       // Método que obtém memória (calculada) usada pela representação em matriz
+    GrafoComPeso(string FileName, int mode);                              // Construtor da classe
+    void addEdge(int v1, int v2, double peso, int mode);                  // Método que adiciona aresta com peso
+    void Dijkstra(int s, int heap = 0);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
+    void Prim(int s);                                                     // Método que realiza o algoritmo de Prim, para montar uma MST do grafo
+    int distancia(int v, int u, int print_caminho = 0, int heap = 0);     // Método que calcula a distância entre os vértices v e u
+    void printListAdj() const;                                            // Método que imprime a lista de adjacências
+    void printMatrizAdj() const;                                          // Método que imprime a matriz de adjacências
+    size_t getAdjMemoryUsage() const;                                     // Método que obtém memória (calculada) usada pela representação em lista
+    size_t getMatMemoryUsage() const;                                     // Método que obtém memória (calculada) usada pela representação em matriz
 }; 
 
 // Constructor
@@ -49,6 +50,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
         pai.resize(V,-2);
         nivel.resize(V,0);
         dist.resize(V,0);
+        distPeso.resize(V,INF); //--------DISTPESO-----------
 
         while(arquivo >> v1 >> v2 >> peso){
             if (peso < 0) negativo = true;
@@ -88,11 +90,11 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
 void GrafoComPeso::addEdge(int v1, int v2, double peso, int mode) {
     v1--; v2--;
     grau[v1]++; grau[v2]++;
-    if (mode == 0){
+    if (mode == 0){ // lista adj
         adjPeso[v1].push_back({peso, v2});
         adjPeso[v2].push_back({peso, v1}); 
     }
-    else{
+    else{ // matriz
         matPeso[v1][v2] = peso;
         matPeso[v2][v1] = peso;
     }
@@ -147,20 +149,154 @@ vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vérti
 
 // Método que realiza o algoritmo de Dijsktra
 void GrafoComPeso::Dijkstra(int s, int heap){
+
     if (negativo) {
         cout << "O grafo possui arestas com peso negativo, a biblioteca ainda nao implementa caminhos minimos com pesos negativos!" << endl;
         return;
     }
-    if (heap == 0) {
+
+    vector<int> componente = bfs_CompCon(s); 
+    int componente_size = componente.size(); // encontrar o tamanho da componente
+
+    cout << "Vc chegou no dijkstra antes do if do heap \n";
+    //cout << "Componente: ";
+    //for (int i : componente){
+    //    cout << i << ", ";
+    //}
+    //cout << endl;
+    //cout << "O tamanho da componente: " << componente_size << endl;
+
+    if (heap == 0) { // versão sem heap
         // Implementar sem heap
+        //vector<double> dist(V, INF);
+        //vector<int> pai(V,0);
+        vector<bool> visited(V, false);
+        int visitados = 0; // conta quantos já foram visitados
+        distPeso[s] = 0; pai[s]=-1; //visited[s] = true; visitados++; // s foi visitado
+
+        if (mode==0) { // list adj
+            while (visitados != componente_size){ // fazemos isso para todos os vértices da componente
+                int u = 0;
+                for (int i = 0 ; i < V ; i++){ // pegar o vertice u não marcado e com dist[u] mínima
+                    if (visited[i]) continue;
+                    if (distPeso[u]>distPeso[i]) u=i;
+                }
+
+                visited[u] = true; // visitar u
+                visitados++;
+
+                for (pair<double,int> p : adjPeso[u]){ // para cada vizinho v de u
+                    int v = p.second;
+                    double peso_uv = p.first;
+
+                    if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
+                        distPeso[v] = distPeso[u] + peso_uv;
+                        pai[v] = u;
+                    }
+                }
+            }
+            cout << "Vc chegou no Dijkstra lista adj, sem heap \n";
+        }
+
+        else { // matriz
+            while (visitados != componente_size){ // fazemos isso para todos os vértices da componente
+                int u = 0;
+                for (int i = 0 ; i < V ; i++){ // pegar o vertice u não marcado e com dist[u] mínima
+                    if (visited[i]) continue;
+                    if (distPeso[u]>distPeso[i]) u=i;
+                }
+
+                visited[u] = true; // visitar u
+                visitados++;
+
+                for (int v = 0 ; v < V ; v++){ // para cada vizinho v de u
+                    if (matPeso[u][v] != INF){
+                        double peso_uv = matPeso[u][v];
+
+                        if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
+                            distPeso[v] = distPeso[u] + peso_uv;
+                            pai[v] = u;
+                        }
+                    }
+                }
+            }
+            cout << "Vc chegou no Dijkstra matriz, sem heap \n";
+        }
+
     }
 
-    else {
+    else { // versão com heap
+
         // Implementar com heap -> usamos priority queue, equivalente a heap
-        vector<double> dist(V, INF);
+        // vector<double> dist(V, INF);
         vector<bool> visited(V, false);
-        priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> h;
+        priority_queue<pair<double, pair<int,int>>, vector<pair<double, pair<int,int>>>, greater<pair<double, pair<int,int>>>> h;
+            // esse heap guarda um double com a distância achada até o vértice, e um pair com o vértice e seu pai 
+        distPeso[s] = 0;
+        h.push({distPeso[s],{s,-1}});
+
+        int count = 0;
+
+        if (mode==0) { // list adj
+            while (!h.empty()){ // fazemos isso para todos os vértices da componente
+                
+                cout << "Vc chegou no while da lista adj" << count++ << endl;
+
+                int u,pai_u;
+                double dist_u;
+
+                pair<double,pair<int,int>> p = h.top();
+                h.pop();
+                u = p.second.first;
+                if (visited[u]) continue;
+
+                dist_u = p.first;
+                pai_u = p.second.second;
+
+                pai[u] = pai_u;
+                distPeso[u] = dist_u;
+                visited[u] = true; // visitar u
+
+                for (pair<double,int> p : adjPeso[u]){ // para cada vizinho v de u
+                    int v = p.second;
+                    double peso_uv = p.first;
+                    h.push({distPeso[u]+peso_uv,{v,u}});
+                }
+            }
+            cout << "Vc chegou no Dijkstra lista adj, com heap \n";
+        }
+
+        else { // matriz
+            while (!h.empty()){ // fazemos isso para todos os vértices da componente
+                
+                int u,pai_u;
+                double dist_u;
+                
+                pair<double,pair<int,int>> p = h.top();
+                h.pop();
+                u = p.second.first;
+                if (visited[u]) continue;
+
+                dist_u = p.first;
+                pai_u = p.second.second;
+
+                pai[u] = pai_u;
+                distPeso[u] = dist_u;
+                visited[u] = true; // visitar u
+
+
+                for (int v = 0 ; v < V ; v++){ // para cada vizinho v de u
+                    if (matPeso[u][v] != INF){
+                        double peso_uv = matPeso[u][v];
+                        h.push({distPeso[u]+peso_uv,{v,u}});
+                    }
+                }
+            }
+            cout << "Vc chegou no Dijkstra matriz, com heap \n";
+        }
+
     }
+    
     return;
 }
 
@@ -169,9 +305,46 @@ void GrafoComPeso::Prim(int s){
     return;
 }
 
-int GrafoComPeso::distancia(int v, int u) const {
-    const_cast<GrafoComPeso*>(this)->Dijkstra(v, 1); //Como distancia ta definido na classe pai, precisamos chamar um metodo de um filho, isso é o const_cast
-    return dist[u-1];
+int GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
+    v--; u--;
+    cout << "Vc chegou na distancia \n";
+
+    if (pai[v] != -1) Dijkstra(v,heap);
+    
+
+    cout << "Pais: ";
+    for (int i : pai){
+        cout << i+1 << ", ";
+    }
+    cout << endl;
+
+    
+    vector<int> caminho;
+    if (print_caminho == 1){
+        if (distPeso[u] != INF){
+            int i = u;
+            while (pai[i] != -1){
+                caminho.insert(caminho.begin(),i);
+                i = pai[i]; 
+            }
+            caminho.insert(caminho.begin(),i);
+
+            cout << "Caminho de " << v+1 << " para " << u+1 << ": ";
+            for (int i : caminho){
+                cout << i+1 << " ";
+            }
+            cout << "\n";
+        }
+        else cout << "Caminho inexistente entre " << v << " e " << u << endl;
+
+    }
+
+    
+    cout << "Vc chegou no fim da distancia \n";
+    return distPeso[u];
+    
+    //const_cast<GrafoComPeso*>(this)->Dijkstra(v, 1); //Como distancia ta definido na classe pai, precisamos chamar um metodo de um filho, isso é o const_cast
+    //return dist[u-1];
 }
 
 // Método que imprime a lista de adjacências
