@@ -170,12 +170,12 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     int componente_size = componente.size(); // encontrar o tamanho da componente
 
     // cout << "Vc chegou no dijkstra antes do if do heap \n";
-    cout << "Componente: ";
-    for (int i : componente){
-       cout << i << ", ";
-    }
-    cout << endl;
-    cout << "O tamanho da componente: " << componente_size << endl;
+    // cout << "Componente: ";
+    // for (int i : componente){
+    //    cout << i << ", ";
+    // }
+    // cout << endl;
+    // cout << "O tamanho da componente: " << componente_size << endl;
 
     if (heap == 0) { // versão sem heap
         // Implementar sem heap
@@ -187,10 +187,12 @@ void GrafoComPeso::Dijkstra(int s, int heap){
 
         if (mode==0) { // list adj
             while (visitados != componente_size){ // fazemos isso para todos os vértices da componente
-                int u = 0;
+                int u = -1;
                 for (int i = 0 ; i < V ; i++){ // pegar o vertice u não marcado e com dist[u] mínima
                     if (visited[i]) continue;
-                    if (distPeso[u]>distPeso[i]) u=i;
+                    if (u == -1) u = i;
+                    if (distPeso[u]>distPeso[i]) u = i;
+                    
                 }
 
                 visited[u] = true; // visitar u
@@ -201,20 +203,22 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     double peso_uv = p.first;
 
                     if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
+                        
                         distPeso[v] = distPeso[u] + peso_uv;
                         pai[v] = u;
                     }
                 }
             }
-            // cout << "Vc chegou no Dijkstra lista adj, sem heap \n";
         }
 
         else { // matriz
             while (visitados != componente_size){ // fazemos isso para todos os vértices da componente
-                int u = 0;
+                int u = -1;
                 for (int i = 0 ; i < V ; i++){ // pegar o vertice u não marcado e com dist[u] mínima
                     if (visited[i]) continue;
-                    if (distPeso[u]>distPeso[i]) u=i;
+                    if (u == -1) u = i;
+                    if (distPeso[u]>distPeso[i]) u = i;
+                    
                 }
 
                 visited[u] = true; // visitar u
@@ -231,7 +235,6 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     }
                 }
             }
-            // cout << "Vc chegou no Dijkstra matriz, sem heap \n";
         }
 
     }
@@ -246,12 +249,9 @@ void GrafoComPeso::Dijkstra(int s, int heap){
         distPeso[s] = 0;
         h.push({distPeso[s],{s,-1}});
 
-        int count = 0;
-
         if (mode==0) { // list adj
             while (!h.empty()){ // fazemos isso para todos os vértices da componente
                 
-                // cout << "Vc chegou no while da lista adj" << count++ << endl;
 
                 int u,pai_u;
                 double dist_u;
@@ -274,7 +274,6 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     h.push({distPeso[u]+peso_uv,{v,u}});
                 }
             }
-            // cout << "Vc chegou no Dijkstra lista adj, com heap \n";
         }
 
         else { // matriz
@@ -303,7 +302,6 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     }
                 }
             }
-            // cout << "Vc chegou no Dijkstra matriz, com heap \n";
         }
 
     }
@@ -318,16 +316,15 @@ void GrafoComPeso::Prim(int s){
 
 int GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     v--; u--;
-    cout << "Vc chegou na distancia \n";
 
     if (pai[v] != -1) Dijkstra(v,heap);
     
 
-    cout << "Pais: ";
-    for (int i : pai){
-        cout << i+1 << ", ";
-    }
-    cout << endl;
+    // cout << "Pais: ";
+    // for (int i : pai){
+    //     cout << i+1 << ", ";
+    // }
+    // cout << endl;
 
     
     vector<int> caminho;
@@ -350,8 +347,7 @@ int GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
 
     }
 
-    
-    cout << "Vc chegou no fim da distancia \n";
+    if (distPeso[u] ==  INF) return -1;
     return distPeso[u];
     
     //const_cast<GrafoComPeso*>(this)->Dijkstra(v, 1); //Como distancia ta definido na classe pai, precisamos chamar um metodo de um filho, isso é o const_cast
