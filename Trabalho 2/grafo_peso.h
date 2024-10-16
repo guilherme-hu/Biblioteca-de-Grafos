@@ -14,7 +14,7 @@ public:
     void addEdge(int v1, int v2, double peso, int mode);                  // Método que adiciona aresta com peso
     void Dijkstra(int s, int heap = 0);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
     void Prim(int s);                                                     // Método que realiza o algoritmo de Prim, para montar uma MST do grafo
-    int distancia(int v, int u, int print_caminho = 0, int heap = 0);     // Método que calcula a distância entre os vértices v e u
+    double distancia(int v, int u, int print_caminho = 0, int heap = 0);     // Método que calcula a distância entre os vértices v e u
     void printListAdj() const;                                            // Método que imprime a lista de adjacências
     void printMatrizAdj() const;                                          // Método que imprime a matriz de adjacências
     size_t getAdjMemoryUsage() const;                                     // Método que obtém memória (calculada) usada pela representação em lista
@@ -76,9 +76,9 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
             vector<int> aux = bfs_CompCon(i);
             compCon.push_back({aux.size(), aux});
 
-            for (int j : aux){
-                cout << j << " ";
-            }
+            // for (int j : aux){
+            //     cout << j << " ";
+            // }
 
             // // Cálculo do diâmetro
             // // -> bfs_compcon acha o vertice com maior nivel para um vertice aleatorio. fazer bfs a partir desse vertice para achar o diametro aproximado
@@ -314,11 +314,10 @@ void GrafoComPeso::Prim(int s){
     return;
 }
 
-int GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
+double GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     v--; u--;
 
     if (pai[v] != -1) Dijkstra(v,heap);
-    
 
     // cout << "Pais: ";
     // for (int i : pai){
