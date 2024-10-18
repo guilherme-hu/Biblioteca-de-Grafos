@@ -3,18 +3,17 @@
 
 class GrafoComPeso : public Grafo {
 protected:
-    vector<vector<pair<double, int>>> adjPeso; // Lista de adjacências com pesos (peso, vértice)
-    vector<vector<double>> matPeso;            // Matriz de adjacências com pesos
+    vector<vector<pair<float, int>>> adjPeso; // Lista de adjacências com pesos (peso, vértice)
+    vector<vector<float>> matPeso;            // Matriz de adjacências com pesos
     bool negativo = false;                     // Variável para verificar se existe aresta com peso negativo
     vector<int> bfs_CompCon(int s);            // Método que realiza a busca em largura para componentes conexas
-    vector<double> distPeso;                   // Variável para registar as distâncias em um grafo com peso //--------DISTPESO-----------
+    vector<float> distPeso;                   // Variável para registar as distâncias em um grafo com peso //--------DISTPESO-----------
 
 public:
     GrafoComPeso(string FileName, int mode);                              // Construtor da classe
-    void addEdge(int v1, int v2, double peso, int mode);                  // Método que adiciona aresta com peso
-    void Dijkstra(int s, int heap = 0);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
-    void Prim(int s);                                                     // Método que realiza o algoritmo de Prim, para montar uma MST do grafo
-    double distancia(int v, int u, int print_caminho = 0, int heap = 0);     // Método que calcula a distância entre os vértices v e u
+    void addEdge(int v1, int v2, float peso, int mode);                   // Método que adiciona aresta com peso
+    void Dijkstra(int s, int heap = 1);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
+    float distancia(int v, int u, int print_caminho = 0, int heap = 1);   // Método que calcula a distância entre os vértices v e u
     void printListAdj() const;                                            // Método que imprime a lista de adjacências
     void printMatrizAdj() const;                                          // Método que imprime a matriz de adjacências
     size_t getAdjMemoryUsage() const;                                     // Método que obtém memória (calculada) usada pela representação em lista
@@ -41,10 +40,10 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
     }
     else{
         int v1, v2;
-        double peso;
+        float peso;
         arquivo >> V;
         if (mode == 0) adjPeso.resize(V);
-        else matPeso.resize(V, vector<double>(V, INF));
+        else matPeso.resize(V, vector<float>(V, INF));
         grau.resize(V,0);
         vis.resize(V,false);
         pai.resize(V,-2);
@@ -92,7 +91,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
 }
 
 // Método que adiciona aresta com peso
-void GrafoComPeso::addEdge(int v1, int v2, double peso, int mode) {
+void GrafoComPeso::addEdge(int v1, int v2, float peso, int mode) {
     v1--; v2--;
     grau[v1]++; grau[v2]++;
     if (mode == 0){ // lista adj
@@ -178,9 +177,6 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     // cout << "O tamanho da componente: " << componente_size << endl;
 
     if (heap == 0) { // versão sem heap
-        // Implementar sem heap
-        //vector<double> dist(V, INF);
-        //vector<int> pai(V,0);
         vector<bool> visited(V, false);
         int visitados = 0; // conta quantos já foram visitados
         distPeso[s] = 0; pai[s]=-1; //visited[s] = true; visitados++; // s foi visitado
@@ -198,9 +194,9 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                 visited[u] = true; // visitar u
                 visitados++;
 
-                for (pair<double,int> p : adjPeso[u]){ // para cada vizinho v de u
+                for (pair<float,int> p : adjPeso[u]){ // para cada vizinho v de u
                     int v = p.second;
-                    double peso_uv = p.first;
+                    float peso_uv = p.first;
 
                     if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
                         
@@ -226,7 +222,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
 
                 for (int v = 0 ; v < V ; v++){ // para cada vizinho v de u
                     if (matPeso[u][v] != INF){
-                        double peso_uv = matPeso[u][v];
+                        float peso_uv = matPeso[u][v];
 
                         if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
                             distPeso[v] = distPeso[u] + peso_uv;
@@ -240,12 +236,10 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     }
 
     else { // versão com heap
-
         // Implementar com heap -> usamos priority queue, equivalente a heap
-        // vector<double> dist(V, INF);
         vector<bool> visited(V, false);
-        priority_queue<pair<double, pair<int,int>>, vector<pair<double, pair<int,int>>>, greater<pair<double, pair<int,int>>>> h;
-            // esse heap guarda um double com a distância achada até o vértice, e um pair com o vértice e seu pai 
+        priority_queue<pair<float, pair<int,int>>, vector<pair<float, pair<int,int>>>, greater<pair<float, pair<int,int>>>> h;
+            // esse heap guarda um float com a distância achada até o vértice, e um pair com o vértice e seu pai 
         distPeso[s] = 0;
         h.push({distPeso[s],{s,-1}});
 
@@ -254,9 +248,9 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                 
 
                 int u,pai_u;
-                double dist_u;
+                float dist_u;
 
-                pair<double,pair<int,int>> p = h.top();
+                pair<float,pair<int,int>> p = h.top();
                 h.pop();
                 u = p.second.first;
                 if (visited[u]) continue;
@@ -268,9 +262,9 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                 distPeso[u] = dist_u;
                 visited[u] = true; // visitar u
 
-                for (pair<double,int> p : adjPeso[u]){ // para cada vizinho v de u
+                for (pair<float,int> p : adjPeso[u]){ // para cada vizinho v de u
                     int v = p.second;
-                    double peso_uv = p.first;
+                    float peso_uv = p.first;
                     h.push({distPeso[u]+peso_uv,{v,u}});
                 }
             }
@@ -280,9 +274,9 @@ void GrafoComPeso::Dijkstra(int s, int heap){
             while (!h.empty()){ // fazemos isso para todos os vértices da componente
                 
                 int u,pai_u;
-                double dist_u;
+                float dist_u;
                 
-                pair<double,pair<int,int>> p = h.top();
+                pair<float,pair<int,int>> p = h.top();
                 h.pop();
                 u = p.second.first;
                 if (visited[u]) continue;
@@ -297,7 +291,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
 
                 for (int v = 0 ; v < V ; v++){ // para cada vizinho v de u
                     if (matPeso[u][v] != INF){
-                        double peso_uv = matPeso[u][v];
+                        float peso_uv = matPeso[u][v];
                         h.push({distPeso[u]+peso_uv,{v,u}});
                     }
                 }
@@ -309,12 +303,8 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     return;
 }
 
-// Método que realiza o algoritmo de Prim
-void GrafoComPeso::Prim(int s){
-    return;
-}
 
-double GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
+float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     v--; u--;
 
     if (pai[v] != -1) Dijkstra(v,heap);
@@ -348,9 +338,6 @@ double GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
 
     if (distPeso[u] ==  INF) return -1;
     return distPeso[u];
-    
-    //const_cast<GrafoComPeso*>(this)->Dijkstra(v, 1); //Como distancia ta definido na classe pai, precisamos chamar um metodo de um filho, isso é o const_cast
-    //return dist[u-1];
 }
 
 // Método que imprime a lista de adjacências
@@ -385,7 +372,7 @@ void GrafoComPeso::printMatrizAdj() const {
 size_t GrafoComPeso::getAdjMemoryUsage() const {
     size_t memoryUsage = 0;
     for (const auto& vec : adjPeso) {
-        memoryUsage += sizeof(vec) + (vec.capacity() * sizeof(pair<double, int>));
+        memoryUsage += sizeof(vec) + (vec.capacity() * sizeof(pair<float, int>));
     }
     return memoryUsage;
 }
@@ -394,7 +381,7 @@ size_t GrafoComPeso::getAdjMemoryUsage() const {
 size_t GrafoComPeso::getMatMemoryUsage() const {
     size_t memoryUsage = 0;
     for (const auto& vec : matPeso) {
-        memoryUsage += sizeof(vec) + (vec.capacity() * sizeof(double));
+        memoryUsage += sizeof(vec) + (vec.capacity() * sizeof(float));
     }
     return memoryUsage;
 }
