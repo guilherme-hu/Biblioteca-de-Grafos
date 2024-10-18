@@ -1,5 +1,5 @@
 Times for dij_notheap_4.txt:
-[ 2970.84 ]
-Mean: 2970.84 seconds
+[ 2970.84, 2874.06 ]
+Mean: 2922.45 seconds
 Standard Deviation: - seconds
 
