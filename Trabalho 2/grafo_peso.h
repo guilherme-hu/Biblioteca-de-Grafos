@@ -290,14 +290,14 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     if (heap == 0) { // versão sem heap
         vector<bool> visited(V, false);
         int visitados = 0; // conta quantos já foram visitados
-        distPeso[s] = 0; pai[s]=-1; //visited[s] = true; visitados++; // s foi visitado
+        distPeso[s] = 0; pai[s]=-3; //visited[s] = true; visitados++; // s foi visitado
 
         if (mode==0) { // list adj
             while (visitados != componente_size){ // fazemos isso para todos os vértices da componente
-                int u = -1;
+                int u = -3;
                 for (int i = 0 ; i < V ; i++){ // pegar o vertice u não marcado e com dist[u] mínima
                     if (visited[i]) continue;
-                    if (u == -1) u = i;
+                    if (u == -3) u = i;
                     if (distPeso[u]>distPeso[i]) u = i;
                     
                 }
@@ -320,10 +320,10 @@ void GrafoComPeso::Dijkstra(int s, int heap){
 
         else { // matriz
             while (visitados != componente_size){ // fazemos isso para todos os vértices da componente
-                int u = -1;
+                int u = -3;
                 for (int i = 0 ; i < V ; i++){ // pegar o vertice u não marcado e com dist[u] mínima
                     if (visited[i]) continue;
-                    if (u == -1) u = i;
+                    if (u == -3) u = i;
                     if (distPeso[u]>distPeso[i]) u = i;
                     
                 }
@@ -352,7 +352,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
         priority_queue<pair<float, pair<int,int>>, vector<pair<float, pair<int,int>>>, greater<pair<float, pair<int,int>>>> h;
             // esse heap guarda um float com a distância achada até o vértice, e um pair com o vértice e seu pai 
         distPeso[s] = 0;
-        h.push({distPeso[s],{s,-1}});
+        h.push({distPeso[s],{s,-3}});
 
         if (mode==0) { // list adj
             while (!h.empty()){ // fazemos isso para todos os vértices da componente
@@ -418,7 +418,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
 float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     v--; u--;
 
-    if (pai[v] != -1) Dijkstra(v,heap);
+    if (pai[v] != -3) Dijkstra(v,heap);
 
     // cout << "Pais: ";
     // for (int i : pai){
@@ -430,7 +430,7 @@ float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     if (print_caminho == 1){
         if (distPeso[u] != INF){
             int i = u;
-            while (pai[i] != -1){
+            while (pai[i] != -3){
                 caminho.insert(caminho.begin(),i);
                 i = pai[i]; 
             }
@@ -446,7 +446,7 @@ float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
 
     }
 
-    if (distPeso[u] ==  INF) return -1;
+    if (distPeso[u] ==  INF) return -3;
     return distPeso[u];
 }
 
