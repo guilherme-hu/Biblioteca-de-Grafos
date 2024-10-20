@@ -3,15 +3,19 @@
 
 class GrafoComPeso : public Grafo {
 protected:
-    vector<vector<pair<float, int>>> adjPeso; // Lista de adjacências com pesos (peso, vértice)
-    vector<vector<float>> matPeso;            // Matriz de adjacências com pesos
-    bool negativo = false;                     // Variável para verificar se existe aresta com peso negativo
-    vector<int> bfs_CompCon(int s);            // Método que realiza a busca em largura para componentes conexas
-    vector<float> distPeso;                   // Variável para registar as distâncias em um grafo com peso //--------DISTPESO-----------
+    vector<vector<pair<float, int>>> adjPeso;               // Lista de adjacências com pesos (peso, vértice)
+    vector<vector<float>> matPeso;                          // Matriz de adjacências com pesos
+    bool negativo = false;                                  // Variável para verificar se existe aresta com peso negativo
+    void addEdge(int v1, int v2, float peso, int mode);     // Método que adiciona aresta com peso
+    vector<int> bfs_CompCon(int s);                         // Método que realiza a busca em largura para componentes conexas
+    vector<float> distPeso;                                 // Variável para registar as distâncias mínimas em um grafo com peso 
 
 public:
     GrafoComPeso(string FileName, int mode);                              // Construtor da classe
-    void addEdge(int v1, int v2, float peso, int mode);                   // Método que adiciona aresta com peso
+    void bfs(int s, int print = 0);                                       // Método que realiza a BFS para um vértice s
+    void dfs(int s, int print = 0);                                       // Método que realiza a DFS para um vértice s
+    int diametro();                                                       // Método que calcula o diâmetro do grafo -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
+    int diametro_aprox();                                                 // Método que calcula o diâmetro do grafo de forma aproximada -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
     void Dijkstra(int s, int heap = 1);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
     float distancia(int v, int u, int print_caminho = 0, int heap = 1);   // Método que calcula a distância entre os vértices v e u
     void printListAdj() const;                                            // Método que imprime a lista de adjacências
@@ -49,7 +53,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
         pai.resize(V,-2);
         nivel.resize(V,0);
         dist.resize(V,0);
-        distPeso.resize(V,INF); //--------DISTPESO-----------
+        distPeso.resize(V,INF); 
 
         while(arquivo >> v1 >> v2 >> peso){
             if (peso < 0) negativo = true;
@@ -74,16 +78,6 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
         if(vis[i] == 0){
             vector<int> aux = bfs_CompCon(i);
             compCon.push_back({aux.size(), aux});
-
-            // for (int j : aux){
-            //     cout << j << " ";
-            // }
-
-            // // Cálculo do diâmetro
-            // // -> bfs_compcon acha o vertice com maior nivel para um vertice aleatorio. fazer bfs a partir desse vertice para achar o diametro aproximado
-            // bfs(maior_dist.first+1,1);              
-            // // cout << maior_dist.first+1 << " " << maior_dist.second << endl;                     
-            // first_diameter = max(first_diameter, maior_dist.second);    
         }
     }
     std::sort(compCon.begin(),compCon.end(),std::greater< std::pair<int,std::vector<int>> >());
@@ -152,6 +146,129 @@ vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vérti
     return componente;
 }
 
+// Método que realiza a busca em largura para um vértice s
+void GrafoComPeso::bfs(int s, int print){
+    s--; // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
+    pai.clear(); pai.resize(V, -2);
+    nivel.clear(); nivel.resize(V, -1);
+    nivel[s] = 0; pai[s] = -1;
+    vector<bool> visitados(V, false);
+    if (mode == 0){ // mode = 0 para representação em lista
+        queue<int> q;
+        visitados[s] = true;
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (const auto& p : adjPeso[u]) {
+                int v = p.second;
+                if (!visitados[v]) {
+                    visitados[v] = true;
+                    pai[v] = u;
+                    nivel[v] = nivel[u] + 1;
+                    if(nivel[v] >= maior_dist.second) maior_dist = {v, nivel[v]};
+                    q.push(v);
+                }
+            }
+        }
+    }
+    else { // mode = 1 para representação em matriz
+        queue<int> q;
+        visitados[s] = true;
+        q.push(s);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v = 0; v < V; ++v) {
+                if (matPeso[u][v] != INF && !visitados[v]) {
+                    visitados[v] = true;
+                    pai[v] = u;
+                    nivel[v] = nivel[u] + 1;
+                    if(nivel[v] >= maior_dist.second) maior_dist = {v, nivel[v]};
+                    q.push(v);
+                }
+            }
+        }
+    }
+    // cout no arquivo
+    if (print == 0){
+        std::ofstream outputFile("bfs_info.txt");
+        if (outputFile.is_open()) {
+            for (int i = 0; i < V; i++){
+                if(visitados[i] == false) continue;
+                else outputFile << "Vertice " << i+1 << ": pai = " << pai[i]+1 << ", nivel = " << nivel[i] << endl;
+            }
+            cout << "-> Informacoes da bfs salvas em 'bfs_info.txt'" << endl;
+        }
+        else {
+            std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
+        }
+    }
+}
+
+// Método que realiza a busca em profundidade para um vértice s
+void GrafoComPeso::dfs(int s, int print){
+    s--; // os vértices são indexados de 1 a V, na dfs ja subtrai -1 de s
+    vector<bool> visitados(V, false);
+    pai.clear(); pai.resize(V, -2);
+    nivel.clear(); nivel.resize(V, -1);
+
+    stack<int> pilha;
+    pilha.push(s);
+    nivel[s] = 0; pai[s] = -1;
+
+    if (mode == 0) { // representação em lista
+        while (!pilha.empty()){
+            int v = pilha.top();
+            pilha.pop();
+            if (visitados[v]) continue;
+            visitados[v] = true;
+            for (const auto& p : adjPeso[v]){
+                int u = p.second;
+                if (visitados[u]) continue; // pular se u já foi visitado
+                pilha.push(u);
+                pai[u] = v; nivel[u] = nivel[v] + 1;
+            }
+        }
+    }
+    else { // representação em matriz
+        while (!pilha.empty()){
+            int v = pilha.top();
+            pilha.pop();
+            if (visitados[v]) continue;
+            visitados[v] = true;
+            for (int u = 0; u < V; ++u){
+                if (visitados[u] || matPeso[v][u] == INF) continue; // pular se u já foi visitado ou não é vizinho
+                pilha.push(u);
+                pai[u] = v; nivel[u] = nivel[v] + 1;
+            }
+        }
+    }
+
+    // cout no arquivo
+    if (print == 0){
+        std::ofstream outputFile("dfs_info.txt");
+        if (outputFile.is_open()) {
+            for (int i = 0; i < V; i++){
+                if(visitados[i] == false) continue;
+                else outputFile << "Vertice " << i+1 << ": pai = " << pai[i]+1 << ", nivel = " << nivel[i] << endl;
+            }
+            cout << "-> Informacoes da dfs salvas em 'dfs_info.txt'" << endl;
+        }
+        else {
+            std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
+        }
+    }
+}
+int diametro(){  // Método que calcula o diâmetro do grafo -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
+    cout << "O grafo possui pesos, não faz sentido calcular o diâmetro!" << endl;
+    return -1;
+}                                                     
+int diametro_aprox(){ // Método que calcula o diâmetro do grafo de forma aproximada -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
+    cout << "O grafo possui pesos, não faz sentido calcular o diâmetro!" << endl;
+    return -1;
+}
+
 // Método que realiza o algoritmo de Dijsktra
 void GrafoComPeso::Dijkstra(int s, int heap){
 
@@ -166,14 +283,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
 
     // Chamada do método bfs_CompCon
     vector<int> componente = bfs_CompCon(s); 
-    int componente_size = componente.size(); // encontrar o tamanho da componente
-
-    // cout << "Vc chegou no dijkstra antes do if do heap \n";
-    // cout << "Componente: ";
-    // for (int i : componente){
-    //    cout << i << ", ";
-    // }
-    // cout << endl;
+    int componente_size = componente.size(); // encontrar o tamanho da componente conexa
     // cout << "O tamanho da componente: " << componente_size << endl;
 
     if (heap == 0) { // versão sem heap
@@ -314,7 +424,6 @@ float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     //     cout << i+1 << ", ";
     // }
     // cout << endl;
-
     
     vector<int> caminho;
     if (print_caminho == 1){
