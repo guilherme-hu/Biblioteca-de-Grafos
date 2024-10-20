@@ -14,8 +14,8 @@ public:
     GrafoComPeso(string FileName, int mode);                              // Construtor da classe
     void bfs(int s, int print = 0);                                       // Método que realiza a BFS para um vértice s
     void dfs(int s, int print = 0);                                       // Método que realiza a DFS para um vértice s
-    int diametro();                                                       // Método que calcula o diâmetro do grafo -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
-    int diametro_aprox();                                                 // Método que calcula o diâmetro do grafo de forma aproximada -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
+    int diametro();                                                       // Método que calcula o diâmetro do grafo 
+    int diametro_aprox();                                                 // Método que calcula o diâmetro do grafo de forma aproximada 
     void Dijkstra(int s, int heap = 1);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
     float distancia(int v, int u, int print_caminho = 0, int heap = 1);   // Método que calcula a distância entre os vértices v e u
     void printListAdj() const;                                            // Método que imprime a lista de adjacências
@@ -260,13 +260,14 @@ void GrafoComPeso::dfs(int s, int print){
         }
     }
 }
-int diametro(){  // Método que calcula o diâmetro do grafo -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
-    cout << "O grafo possui pesos, não faz sentido calcular o diâmetro!" << endl;
-    return -1;
-}                                                     
-int diametro_aprox(){ // Método que calcula o diâmetro do grafo de forma aproximada -> deve gerar erro porque não faz sentido calcular diametro em grafo com pesos
-    cout << "O grafo possui pesos, não faz sentido calcular o diâmetro!" << endl;
-    return -1;
+int GrafoComPeso::diametro() {  // Método que calcula o diâmetro do grafo 
+    cout << "Nao implementado" << endl;
+    return 0;
+}       
+
+int GrafoComPeso::diametro_aprox(){ // Método que calcula o diâmetro do grafo de forma aproximada
+    cout << "Nao implementado" << endl;
+    return 0;
 }
 
 // Método que realiza o algoritmo de Dijsktra
