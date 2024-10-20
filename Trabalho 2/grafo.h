@@ -46,11 +46,11 @@ protected:
 public:
     Grafo();                                    // Construtor padrão, para uso nas subclasses
     Grafo(string FileName, int mode);           // Construtor da classe, com parâmetros
-    void bfs(int s, int print = 0);             // Método que realiza a BFS para um vértice s, pode ou não gerar um txt com as informações da BFS
-    void dfs(int s, int print = 0);             // Método que realiza a DFS para um vértice s, pode ou não gerar um txt com as informações da DFS
+    virtual void bfs(int s, int print = 0);     // Método que realiza a BFS para um vértice s, pode ou não gerar um txt com as informações da BFS
+    virtual void dfs(int s, int print = 0);     // Método que realiza a DFS para um vértice s, pode ou não gerar um txt com as informações da DFS
     virtual int distancia(int v, int u);        // Método que calcula a distância entre os vértices v e u
-    int diametro();                             // Método que calcula o diâmetro do grafo. Para grafos grandes, pode ser muito custoso, por isso, recoendamos usar o método diametro_aprox
-    int diametro_aprox();                       // Método que calcula o diâmetro do grafo de forma aproximada
+    virtual int diametro();                     // Método que calcula o diâmetro do grafo. Para grafos grandes, pode ser muito custoso, por isso, recoendamos usar o método diametro_aprox
+    virtual int diametro_aprox();               // Método que calcula o diâmetro do grafo de forma aproximada
     void geradortxt();                          // Método que gera um arquivo de saída com as informações gerais do grafo
     virtual void printListAdj();                // Método que printa a lista de adjacências
     virtual void printMatrizAdj();              // Método que printa a matriz de adjacências
@@ -64,8 +64,8 @@ public:
     int getGrauMin() const { return grauMin; }                 // Retorna o grau mínimo
     double getGrauMediano() const { return grauMediano; }      // Retorna o grau mediano
     double getGrauMedio() const { return grauMedio; }          // Retorna o grau médio
-    virtual size_t getAdjMemoryUsage() const;                          // Método que calcula a memória usada pela representação em lista
-    virtual size_t getMatMemoryUsage() const;                          // Método que calcula a memória usada pela representação em matriz
+    virtual size_t getAdjMemoryUsage() const;                  // Método que calcula a memória usada pela representação em lista
+    virtual size_t getMatMemoryUsage() const;                  // Método que calcula a memória usada pela representação em matriz
 };
 
 
