@@ -21,7 +21,9 @@ void testDijkstra(const std::string& filename, std::vector<double>& times, bool 
     for (int i = 0; i < 100; ++i) {
         int random_vertex = dis(gen);
         auto start = std::chrono::high_resolution_clock::now();
-        g.Dijkstra(random_vertex, useHeap);
+        for(int j = 0; j < vertices; ++j) {
+            g.distancia(random_vertex, j, 0, useHeap);
+        }
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> duration = end - start;
