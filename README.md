@@ -31,6 +31,7 @@ G.diametro_aprox() // retorna o diâmetro aproximado, bem mais rápido que o mé
 ### Chamada dos Métodos Principais para GrafoComPeso (exclusivo para grafos com peso):
 ```cpp
 G.Dijkstra(int vértice inicial, int heap) // executa o algoritmo de Dijkstra, para uso prático use o método Distância
+G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap)
 ```
 - G.Dijkstra(int vértice inicial, int heap) → executa o algoritmo de Dijkstra. Esse método não retorna nada e só altera variáveis protegidas da subclasse, o usuário pode chamá-lo, mas não terá nenhum efeito visível a ele. Sua importância se deve ao seu uso no método "distância".
 - G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap) → override do método genérico distância. Retorna a distância mínima entre os vértices 1 e 2, ou, caso não haja um caminho entre eles, -1 é retornado. Por meio dos parâmetros passados ao método, é possível escolher se será ou não impresso o caminho mínimo, assim como escolher se, no Dijkstra dentro do método, será ou não executado usando o heap
