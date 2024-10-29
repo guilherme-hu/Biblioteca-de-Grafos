@@ -14,10 +14,10 @@ int main() {
     
     clock_t start = clock();
 
-    string FileName = "grafo_W_1.txt";      
-    int mode = 1;                               // 0 para lista de adjacência e 1 para matriz de adjacência
+    string FileName = "grafo_teste_W.txt";      // nome do arquivo txt com o grafo
+    int mode = 0;                               // 0 para lista de adjacência e 1 para matriz de adjacência
 
-    GrafoComPeso g(FileName, mode);                    // Criação do objeto grafo
+    GrafoComPeso g(FileName, mode);                    // Criação do objeto grafo com peso
     // if(mode == 0) g.printListAdj(); 
     // else g.printMatrizAdj();            
 
@@ -28,6 +28,7 @@ int main() {
     cout << "Grau mediano: " << g.getGrauMediano() << endl;     // Print do grau mediano
     cout << "Grau medio: " << g.getGrauMedio() << endl;         // Print do grau médio
 
+    cout << g.distancia(10, 30, 0, 1) << endl;                  // Distância mínima entre os vértices 10 e 30
 
     clock_t end = clock();
 
@@ -36,6 +37,3 @@ int main() {
     return 0;   
 
 }
-
-//  g++ main.cpp -o main -O3
-// ./main
