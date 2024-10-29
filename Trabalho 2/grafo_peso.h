@@ -3,31 +3,35 @@
 
 class GrafoComPeso : public Grafo {
 protected:
-    vector<vector<pair<float, int>>> adjPeso;               // Lista de adjacências com pesos (peso, vértice)
+    vector<vector<pair<float, int>>> adjPeso;               // Lista de adjacências com pesos -> cada vizinho de um vértice é salvo no formato (peso, vértice)
     vector<vector<float>> matPeso;                          // Matriz de adjacências com pesos
-    bool negativo = false;                                  // Variável para verificar se existe aresta com peso negativo
-    void addEdge(int v1, int v2, float peso, int mode);     // Método que adiciona aresta com peso
-    vector<int> bfs_CompCon(int s);                         // Método que realiza a busca em largura para componentes conexas
-    vector<float> distPeso;                                 // Variável para registar as distâncias mínimas em um grafo com peso 
+    bool negativo = false;                                  // Variável que indica se existe aresta com peso negativo no grafo recebido
+    void addEdge(int v1, int v2, float peso, int mode);     // Método que adiciona aresta com peso à estrutra de representação do grafo com peso escolhida -> mode = 0 para lista e 1 para matriz
+    vector<int> bfs_CompCon(int s);                         // Método que realiza a busca em largura para contabilizar as componentes conexas existentes no grafo
+    vector<float> distPeso;                                 // Vetor que contém as distâncias mínimas de um vértice escolhido com raiz (no Dijkstra) para todos os outros vértices do grafo
 
 public:
-    GrafoComPeso(string FileName, int mode);                              // Construtor da classe
-    void bfs(int s, int print = 0);                                       // Método que realiza a BFS para um vértice s
-    void dfs(int s, int print = 0);                                       // Método que realiza a DFS para um vértice s
-    int diametro();                                                       // Método que calcula o diâmetro do grafo 
-    int diametro_aprox();                                                 // Método que calcula o diâmetro do grafo de forma aproximada 
-    void Dijkstra(int s, int heap = 1);                                   // Método que realiza o algoritmo de Dijsktra. Parâmetro heap = 0 para sem heap e 1 para com heap
-    float distancia(int v, int u, int print_caminho = 0, int heap = 1);   // Método que calcula a distância entre os vértices v e u
-    void printListAdj() const;                                            // Método que imprime a lista de adjacências
-    void printMatrizAdj() const;                                          // Método que imprime a matriz de adjacências
-    size_t getAdjMemoryUsage() const;                                     // Método que obtém memória (calculada) usada pela representação em lista
-    size_t getMatMemoryUsage() const;                                     // Método que obtém memória (calculada) usada pela representação em matriz
+    GrafoComPeso(string FileName, int mode);                                // Construtor da subclasse
+
+    void bfs(int s, int print = 0);                                         // Método que realiza a BFS para um vértice s -> para o grafo com peso, ignora os pesos e realiza a BFS normalmente
+    void dfs(int s, int print = 0);                                         // Método que realiza a DFS para um vértice s -> para o grafo com peso, ignora os pesos e realiza a DFS normalmente
+    int diametro();                                                         // Método que calcula o diâmetro do grafo -> não implementado para grafos com pesos por estar fora do escopo do trabalho
+    int diametro_aprox();                                                   // Método que calcula o diâmetro do grafo de forma aproximada -> não implementado para grafos com pesos por estar fora do escopo do trabalho
+    void Dijkstra(int s, int heap = 1);                                     // Método que realiza o algoritmo de Dijsktra. O parâmetro heap define se o algoritmo será executado com uso de heap (1) ou sem uso de heap (0)
+    float distancia(int v, int u, int print_caminho = 0, int heap = 1);     // Método que calcula a distância mínima entre os vértices v e u -> válido apenas para grafos sem pesos negativos. 
+                                                                            // -/-> O parâmetro heap define se o Dijkstra será executado com heap (1) ou sem heap (0), e o parâmetro print_caminho define se o caminho mínimo será impresso junto da distância mínima
+    void printListAdj() const;                                              // Método que imprime a lista de adjacências com pesos
+    void printMatrizAdj() const;                                            // Método que imprime a matriz de adjacências com pesos
+    size_t getAdjMemoryUsage() const;                                       // Método que obtém memória (calculada) usada pela representação em lista
+    size_t getMatMemoryUsage() const;                                       // Método que obtém memória (calculada) usada pela representação em matriz
 }; 
 
-// Constructor
+// Constructor da subclasse GrafoComPeso
+// mode = 0 para lista de adjacência e 1 para matriz de adjacência
 GrafoComPeso::GrafoComPeso(string FileName, int mode) {
+    
     // Inicializar membros da classe pai manualmente
-    this->mode = mode;
+    this->mode = mode; 
     this->V = 0;
     this->A = 0;
     this->grau.clear();
@@ -37,6 +41,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
     this->nivel.clear();
     this->dist.clear();
 
+    // Leitura do arquivo de entrada
     std::ifstream arquivo(FileName);
     cout << "-> Pegando dados do txt de grafo com peso: '" << FileName << "'" << endl;
     if(!arquivo.is_open()){
@@ -46,8 +51,12 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
         int v1, v2;
         float peso;
         arquivo >> V;
+
+        // Inicializar os vetores de acordo com o modo de representação escolhido
         if (mode == 0) adjPeso.resize(V);
         else matPeso.resize(V, vector<float>(V, INF));
+
+        // Inicializar os vetores de grau, visitados, pai, nível, distância e distância mínima
         grau.resize(V,0);
         vis.resize(V,false);
         pai.resize(V,-2);
@@ -84,11 +93,12 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode) {
 
 }
 
-// Método que adiciona aresta com peso
+// Método que adiciona aresta com peso ao modo de representação escolhido do grafo com peso
+// mode = 0 para lista de adjacência e 1 para matriz de adjacência
 void GrafoComPeso::addEdge(int v1, int v2, float peso, int mode) {
     v1--; v2--;
     grau[v1]++; grau[v2]++;
-    if (mode == 0){ // lista adj
+    if (mode == 0){ // lista de adjacência
         adjPeso[v1].push_back({peso, v2});
         adjPeso[v2].push_back({peso, v1}); 
     }
@@ -99,7 +109,7 @@ void GrafoComPeso::addEdge(int v1, int v2, float peso, int mode) {
 }
 
 
-// Método que realiza a busca em largura para componentes conexas
+ // Método que realiza a busca em largura para contabilizar as componentes conexas existentes no grafo
 vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vértices pertencentes a uma componente conexa
     vector<int> componente;
     maior_dist = make_pair(-1, 0);
@@ -146,7 +156,8 @@ vector<int> GrafoComPeso::bfs_CompCon(int s) { // Retorna um vetor com os vérti
     return componente;
 }
 
-// Método que realiza a busca em largura para um vértice s
+// Método que realiza a busca em largura para um vértice s -> para o grafo com peso, ignora os pesos e realiza a BFS normalmente
+// print = 0 para printar e 1 para não printar informações da arvore geradora da BFS
 void GrafoComPeso::bfs(int s, int print){
     s--; // os vértices são indexados de 1 a V, na bfs ja subtrai -1 de s
     pai.clear(); pai.resize(V, -2);
@@ -206,7 +217,8 @@ void GrafoComPeso::bfs(int s, int print){
     }
 }
 
-// Método que realiza a busca em profundidade para um vértice s
+// Método que realiza a busca em profundidade para um vértice s -> para o grafo com peso, ignora os pesos e realiza a DFS normalmente
+// print = 0 para printar e 1 para não printar informações da arvore geradora da DFS
 void GrafoComPeso::dfs(int s, int print){
     s--; // os vértices são indexados de 1 a V, na dfs ja subtrai -1 de s
     vector<bool> visitados(V, false);
@@ -260,20 +272,24 @@ void GrafoComPeso::dfs(int s, int print){
         }
     }
 }
-int GrafoComPeso::diametro() {  // Método que calcula o diâmetro do grafo 
+
+// Método que calcula o diâmetro do grafo -> não implementado para grafos com pesos por estar fora do escopo do trabalho
+int GrafoComPeso::diametro() {  
     cout << "Nao implementado" << endl;
     return 0;
 }       
 
-int GrafoComPeso::diametro_aprox(){ // Método que calcula o diâmetro do grafo de forma aproximada
+// Método que calcula o diâmetro do grafo de forma aproximada -> não implementado para grafos com pesos por estar fora do escopo do trabalho
+int GrafoComPeso::diametro_aprox(){ 
     cout << "Nao implementado" << endl;
     return 0;
 }
 
 // Método que realiza o algoritmo de Dijsktra
+// s é o vértice de origem, e heap é um parâmetro que define se o algoritmo será executado com uso de heap (1) ou sem uso de heap (0)
 void GrafoComPeso::Dijkstra(int s, int heap){
 
-    if (negativo) {
+    if (negativo) { // Dijkstra não funciona com pesos negativos
         cout << "O grafo possui arestas com peso negativo, a biblioteca ainda nao implementa caminhos minimos com pesos negativos!" << endl;
         return;
     }
@@ -309,7 +325,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     int v = p.second;
                     float peso_uv = p.first;
 
-                    if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
+                    if (distPeso[v] > distPeso[u] + peso_uv){ // se foi encontrado um dist[v] menor, muda o dist[v]
                         
                         distPeso[v] = distPeso[u] + peso_uv;
                         pai[v] = u;
@@ -335,7 +351,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
                     if (matPeso[u][v] != INF){
                         float peso_uv = matPeso[u][v];
 
-                        if (distPeso[v] > distPeso[u] + peso_uv){ // se a gnt achou um dist[v] menor, muda o dist[v]
+                        if (distPeso[v] > distPeso[u] + peso_uv){ // se foi encontrado um dist[v] menor, muda o dist[v]
                             distPeso[v] = distPeso[u] + peso_uv;
                             pai[v] = u;
                         }
@@ -347,7 +363,7 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     }
 
     else { // versão com heap
-        // Implementar com heap -> usamos priority queue, equivalente a heap
+        // Implementar com heap -> usamos priority queue, equivalente a min-heap ao definir o comparator como greater
         vector<bool> visited(V, false);
         priority_queue<pair<float, pair<int,int>>, vector<pair<float, pair<int,int>>>, greater<pair<float, pair<int,int>>>> h;
             // esse heap guarda um float com a distância achada até o vértice, e um pair com o vértice e seu pai 
@@ -414,11 +430,13 @@ void GrafoComPeso::Dijkstra(int s, int heap){
     return;
 }
 
-
+// Método que calcula a distância mínima entre os vértices v e u -> válido apenas para grafos sem pesos negativos. 
+// O parâmetro heap define se o Dijkstra será executado com heap (1) ou sem heap (0), e o parâmetro print_caminho define se o caminho mínimo será impresso junto da distância mínima
 float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
-    v--; u--;
+    v--; u--; 
 
-    if (pai[v] != -3) Dijkstra(v,heap);
+    if (pai[v] != -3) Dijkstra(v,heap); // se o último Dijkstra feito foi executado com raiz no primeiro dos vértices passados
+                                        // para a função atual, não é necessário rodar o Dijkstra novamente
 
     // cout << "Pais: ";
     // for (int i : pai){
@@ -427,10 +445,10 @@ float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
     // cout << endl;
     
     vector<int> caminho;
-    if (print_caminho == 1){
+    if (print_caminho == 1){ // printar o caminho mínimo
         if (distPeso[u] != INF){
             int i = u;
-            while (pai[i] != -3){
+            while (pai[i] != -3){ 
                 caminho.insert(caminho.begin(),i);
                 i = pai[i]; 
             }
@@ -446,11 +464,11 @@ float GrafoComPeso::distancia(int v, int u, int print_caminho, int heap){
 
     }
 
-    if (distPeso[u] ==  INF) return -3;
-    return distPeso[u];
+    if (distPeso[u] ==  INF) return -3; // não existe caminho entre os vértices, definimos -3 como valor de retorno para indicar isso
+    return distPeso[u]; // retorna a distância mínima entre os vértices
 }
 
-// Método que imprime a lista de adjacências
+// Método que imprime a lista de adjacências com pesos
 void GrafoComPeso::printListAdj() const {
     for (int i = 0; i < adjPeso.size(); ++i) {
         cout << "Vertice " << i + 1 << ": [";
@@ -464,7 +482,7 @@ void GrafoComPeso::printListAdj() const {
     }
 }
 
-// Método que imprime a matriz de adjacências
+// Método que imprime a matriz de adjacências com pesos
 void GrafoComPeso::printMatrizAdj() const {
     for (const auto& row : matPeso) {
         for (const auto& weight : row) {
