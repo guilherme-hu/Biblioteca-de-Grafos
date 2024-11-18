@@ -20,6 +20,7 @@ protected:
     vector<pair<pair<int, int>,int>> pai_duplo;                     // Vetor que guarda o pai de cada vértice no caminho aumentante encontrado pelo Ford-Fulkerson
                                                                     // Primeiro int é o pai; segundo int do pai é o indice na lista de adj; e o terceiro int é o tipo da aresta (origem/reversa)
     bool bfs_FF(int s, int t);                                      // Método que realiza a BFS para o algoritmo de Ford-Fulkerson
+    bool dfs_FF(int s, int t);                                      // Método que realiza a DFS para o algoritmo de Ford-Fulkerson
     int gargalo(int s, int t);                                      // Método que calcula o gargalo do caminho encontrado pelo Ford-Fulkerson
     void atualizar_grafos(int u, int v, int gargalo);               // Método que atualiza o grafo residual após encontrar um caminho aumentante no Ford-Fulkerson
 
@@ -588,6 +589,36 @@ bool GrafoComPeso::bfs_FF(int s, int t) {
     return false;
 }
 
+// Adicionar a função dfs para encontrar um caminho aumentante
+bool GrafoComPeso::dfs_FF(int s, int t) {
+    vector<bool> vis(V, false);
+    vis[s] = true;
+    stack<int> pilha;
+    pilha.push(s);
+
+    while (!pilha.empty()) { // enquanto a pilha não estiver vazia
+        int u = pilha.top();
+        pilha.pop();
+
+        for (int i = 0; i < residual[u].size(); ++i) {
+            int v = residual[u][i].second; // vértice adjacente
+            int capacity = residual[u][i].first.second; // capacidade da aresta
+            // cout << "u = " << u << ", v = " << v << ", cap = " << capacity << endl;
+
+            if (!vis[v] && capacity > 0) { // se o vértice não foi visitado e a capacidade da aresta é maior que 0
+                pilha.push(v);
+                if (residual[u][i].first.first == 1) pai_duplo[v] = {{u, i}, 1}; // se a aresta é de origem
+                else pai_duplo[v] = {{u, i},0}; // se a aresta é reversa
+                vis[v] = true;
+                if (v == t) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 // Método que calcula o gargalo (capacidade mínima) do caminho encontrado pelo Ford-Fulkerson
 int GrafoComPeso::gargalo(int s, int t) {
     int gargalo = INF;
@@ -655,6 +686,7 @@ int GrafoComPeso::ford_fulkerson(int s, int t, int print) {
         if (outputFile.is_open()) {
             for (int i = 0; i < V; ++i) {
                 for (int j = 0; j < original[i].size(); ++j) {
+                    if (original[i][j].first.second > 0)
                     outputFile << "Aresta (" << i + 1 << " -> " << original[i][j].second + 1 << "): fluxo = " << original[i][j].first.second << endl;
                     // cout << "Aresta (" << i + 1 << " -> " << original[i][j].second + 1 << "): fluxo = " << original[i][j].first.second << endl;
                 }
