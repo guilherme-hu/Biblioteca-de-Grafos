@@ -18,7 +18,8 @@ protected:
                                                                     // o/r = tipo da aresta: origem/reversa -> 1 se a aresta é de origem e 0 se é reversa
                                                                     // f/r = valor do fluxo/resíduo -> se a aresta é de origem o valor é do fluxo na aresta, se for reversa é o valor do resíduo
     vector<pair<pair<int, int>,int>> pai_duplo;                     // Vetor que guarda o pai de cada vértice no caminho aumentante encontrado pelo Ford-Fulkerson
-    bool bfs_FF(int s, int t);                                      // Método que realiza a DFS para o algoritmo de Ford-Fulkerson
+                                                                    // Primeiro int é o pai; segundo int do pai é o indice na lista de adj; e o terceiro int é o tipo da aresta (origem/reversa)
+    bool bfs_FF(int s, int t);                                      // Método que realiza a BFS para o algoritmo de Ford-Fulkerson
     int gargalo(int s, int t);                                      // Método que calcula o gargalo do caminho encontrado pelo Ford-Fulkerson
     void atualizar_grafos(int u, int v, int gargalo);               // Método que atualiza o grafo residual após encontrar um caminho aumentante no Ford-Fulkerson
 
@@ -37,7 +38,7 @@ public:
     size_t getAdjMemoryUsage() const;                                       // Método que obtém memória (calculada) usada pela representação em lista
     size_t getMatMemoryUsage() const;                                       // Método que obtém memória (calculada) usada pela representação em matriz
 
-    int ford_fulkerson(int s, int t, int print = 0);                        // Método que realiza o algoritmo de Ford-Fulkerson para fluxo máximo
+    int ford_fulkerson(int s, int t, int print = 0);                        // Método que realiza o algoritmo de Ford-Fulkerson para fluxo máximo, com print = 1 para printar informações do Ford-Fulkerson no txt
 
 }; 
 
