@@ -17,8 +17,10 @@ protected:
     vector<vector< pair< pair<int, int> , int> >> residual;         // Lista de adjacências para o grafo residual, usado no Ford-Fulkerson
                                                                     // o/r = tipo da aresta: origem/reversa -> 1 se a aresta é de origem e 0 se é reversa
                                                                     // f/r = valor do fluxo/resíduo -> se a aresta é de origem o valor é do fluxo na aresta, se for reversa é o valor do resíduo
+    vector<pair<pair<int, int>,int>> pai_duplo;                     // Vetor que guarda o pai de cada vértice no caminho aumentante encontrado pelo Ford-Fulkerson
     bool dfs_FF(int s, int t);                                      // Método que realiza a DFS para o algoritmo de Ford-Fulkerson
     int gargalo(int s, int t);                                      // Método que calcula o gargalo do caminho encontrado pelo Ford-Fulkerson
+    void atualizar_grafos(int u, int v, int gargalo);               // Método que atualiza o grafo residual após encontrar um caminho aumentante no Ford-Fulkerson
 
 public:
     GrafoComPeso(string FileName, int mode, int direcionado);               // Construtor da subclasse
@@ -77,6 +79,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
             adjPeso.resize(V);
             original.resize(V);
             residual.resize(V);
+            pai_duplo.resize(V, {{-2,-2},0});
         }
 
         // Inicializar os vetores de grau, visitados, pai, nível, distância e distância mínima
@@ -558,9 +561,7 @@ size_t GrafoComPeso::getMatMemoryUsage() const {
 // Adicionar a função dfs para encontrar um caminho aumentante
 bool GrafoComPeso::dfs_FF(int s, int t) {
     vector<bool> vis(V, false);
-    pai.resize(V,-2);
     vis[s] = true;
-    pai[s] = -1;
     stack<int> pilha;
     pilha.push(s);
 
@@ -575,7 +576,8 @@ bool GrafoComPeso::dfs_FF(int s, int t) {
 
             if (!vis[v] && capacity > 0) { // se o vértice não foi visitado e a capacidade da aresta é maior que 0
                 pilha.push(v);
-                pai[v] = u;
+                if (residual[u][i].first.first == 1) pai_duplo[v] = {{u, i}, 1}; // se a aresta é de origem
+                else pai_duplo[v] = {{u, i},0}; // se a aresta é reversa
                 vis[v] = true;
                 if (v == t) {
                     return true;
@@ -591,20 +593,36 @@ int GrafoComPeso::gargalo(int s, int t) {
     int gargalo = INF;
     int v = t;
     while (v != s) { // percorre o caminho de t até s, pelo pai de cada vértice
-        int u = pai[v];
-        for (int i = 0; i < residual[u].size(); ++i) {
-            if (residual[u][i].second == v) { // se a aresta é a que liga u a v
-                gargalo = min(gargalo, residual[u][i].first.second); // atualiza o gargalo
-                break;
-            }
-        }
-        v = u;
+        int p = pai_duplo[v].first.first; // vértice pai
+        int i = pai_duplo[v].first.second; // índice da aresta na lista de adjacências
+        gargalo = min(gargalo, residual[p][i].first.second); // atualiza o gargalo
+        v = p;
     }
     return gargalo;
 }
 
+// Método que atualiza o grafo residual após encontrar um caminho aumentante no Ford-Fulkerson
+void GrafoComPeso::atualizar_grafos(int u, int v, int gargalo) {
+    while (v != u) {
+        int p = pai_duplo[v].first.first; // vértice pai
+        int i = pai_duplo[v].first.second; // índice da aresta na lista de adjacências
+        residual[p][i].first.second -= gargalo; // diminui a capacidade da aresta no grafo residual
+        original[p][i].first.second += gargalo; // aumenta o fluxo da aresta no grafo original
+
+        // Atualiza a aresta reversa no grafo residual
+        for (int j = 0; j < residual[v].size(); ++j) {
+            if (residual[v][j].second == p && residual[v][j].first.first == pai_duplo[v].second) {
+                residual[v][j].first.second += gargalo;
+                break;
+            }
+        }
+        v = p;
+    }
+}
+
 // Método que realiza o algoritmo de Ford-Fulkerson para fluxo máximo
 int GrafoComPeso::ford_fulkerson(int s, int t, int print) {
+    clock_t start = clock();
     s--; t--;
     int fluxo_max = 0;
 
@@ -616,30 +634,21 @@ int GrafoComPeso::ford_fulkerson(int s, int t, int print) {
     // Enquanto houver um caminho aumentante de chegada 's' ao vértice de destino 't'
     while (dfs_FF(s, t)) {
         int garg = gargalo(s, t); // calcula o gargalo do caminho
-        // cout << "Gargalo: " << garg << endl;
+        // for (int i = 0; i < V; ++i) {
+        //     cout << "Pai de " << i << ": " << pai_duplo[i].first.first << endl;
+        // }
+        // cout << "Gargalo: " << garg << endl << endl;
         
         // Atualiza os valores de capacidade e resíduo das arestas no caminho aumentante, no grafo residual
         // Atualiza os valores de fluxo no grafo original
-        int v = t;
-        while (v != s) {
-            int u = pai[v];
-            for (int i = 0; i < residual[u].size(); ++i) {
-            if (residual[u][i].second == v) {
-                residual[u][i].first.second -= garg;
-                original[u][i].first.second += garg;
-            }
-            }
-            for (int i = 0; i < residual[v].size(); ++i) {
-            if (residual[v][i].second == u) {
-                residual[v][i].first.second += garg;
-            }
-            }
-            v = u;
-        }
+        atualizar_grafos(s, t, garg);
 
         // Adiciona o fluxo do caminho ao fluxo máximo
         fluxo_max += garg;
     }
+
+    clock_t end = clock();
+    cout << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl; // Tempo de execução
 
     if (print == 1) { // printar informações do Ford-Fulkerson no txt
         std::ofstream outputFile("ford_fulkerson_info.txt");
@@ -650,11 +659,12 @@ int GrafoComPeso::ford_fulkerson(int s, int t, int print) {
                     cout << "Aresta (" << i + 1 << " -> " << original[i][j].second + 1 << "): fluxo = " << original[i][j].first.second << endl;
                 }
             }
-            outputFile << "Fluxo máximo: " << fluxo_max << endl;
+            outputFile << "Fluxo máximo: " << fluxo_max << endl << endl;
             cout << "-> Informacoes de Ford-Fulkerson salvas em 'ford_fulkerson_info.txt'" << endl;
         } else {
             std::cerr << "-> Nao foi possível criar o arquivo de saida" << "\n";
         }
+        outputFile << "Tempo de execucao: " << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
     }
     else{ // Printar alocação de fluxo em cada aresta
         for (int i = 0; i < V; ++i) {
@@ -663,5 +673,6 @@ int GrafoComPeso::ford_fulkerson(int s, int t, int print) {
             }
         }
     }
+    
     return fluxo_max;
 }
