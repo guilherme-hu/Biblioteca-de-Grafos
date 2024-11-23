@@ -1,9 +1,0 @@
-Aresta (1 -> 2): fluxo = 12
-Aresta (1 -> 3): fluxo = 4
-Aresta (1 -> 6): fluxo = 5
-Aresta (2 -> 4): fluxo = 4
-Aresta (2 -> 5): fluxo = 5
-Aresta (3 -> 6): fluxo = 3
-Fluxo máximo: 21
-
-Tempo de execucao: 0s
