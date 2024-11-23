@@ -1,6 +1,6 @@
 # Uso da Biblioteca
 
-Esse projeto é a primeira parte do trabalho da disciplina de Teoria dos Grafos - COS242, cuja proposta é implementar uma biblioteca capaz de armazenar, manipular e 
+Esse projeto é faz parte do trabalho da disciplina de Teoria dos Grafos - COS242, cuja proposta é implementar uma biblioteca capaz de armazenar, manipular e 
 obter diferentes informações sobre grafos repassados por meio de um arquivo representando sua estrutura, assim como implementar um conjunto de algoritmos em grafos. 
 Aqui apresentamos um guia com instruções, de forma mais direta, sobre como utilizar a biblioteca. 
 
@@ -8,7 +8,7 @@ Aqui apresentamos um guia com instruções, de forma mais direta, sobre como uti
 
 ```cpp
 Grafo G (arquivo txt, mode) // Para grafos não direcionados e sem pesos nas arestas
-GrafoComPeso G (arquivo txt, mode) // Para grafos não direcionados e com pesos nas arestas
+GrafoComPeso G (arquivo txt, mode, direcionado) // Para grafos com pesos nas arestas, podendo ser definido se o grafo é ou não direcionado
 ```
 
 ### Chamada dos Métodos Principais (funcionam para todos objetos):
@@ -31,10 +31,17 @@ G.diametro_aprox() // retorna o diâmetro aproximado, bem mais rápido que o mé
 ### Chamada dos Métodos Principais para GrafoComPeso (exclusivo para grafos com peso):
 ```cpp
 G.Dijkstra(int vértice inicial, int heap) // executa o algoritmo de Dijkstra, para uso prático use o método Distância
-G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap)
+G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap) // calcula a distância entre os vértices 1 e 2, a partir do algoritmo de Dijkstra
+
+// Se o grafo for direcionado, além dos métodos acima e os da classe pai:
+G.ford_fulkerson(int vértice s, int vértice t, int print) // calcula o fluxo máximo no grafo dado, de vértices inicial s e final t 
 ```
 - G.Dijkstra(int vértice inicial, int heap) → executa o algoritmo de Dijkstra. Esse método não retorna nada e só altera variáveis protegidas da subclasse, o usuário pode chamá-lo, mas não terá nenhum efeito visível a ele. Sua importância se deve ao seu uso no método "distância".
 - G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap) → override do método genérico distância. Retorna a distância mínima entre os vértices 1 e 2, ou, caso não haja um caminho entre eles, -1 é retornado. Por meio dos parâmetros passados ao método, é possível escolher se será ou não impresso o caminho mínimo, assim como escolher se, no Dijkstra dentro do método, será ou não executado usando o heap
+
+-> Caso o grafo seja direcionado, é possível também chamar o seguinte método:
+- G.ford_fulkerson(int vértice s, int vértice t, int print) -> calcula e retorna o valor do fluxo máximo no grafo direcionado G e a distribuição de fluxos para cada aresta, de vértices inicial s e final t, com a opção de salvar esses dados em um arquivo txt
+
 
 ### Chamada dos Métodos Extras (funcionam para todos objetos):
 
