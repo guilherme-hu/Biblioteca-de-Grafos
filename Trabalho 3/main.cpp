@@ -14,7 +14,7 @@ int main() {
     
     clock_t start = clock();
 
-    string FileName = "grafo_rf_4.txt";      // nome do arquivo txt com o grafo
+    string FileName = "grafo_rf_6.txt";      // nome do arquivo txt com o grafo
     int mode = 0;                               // 0 para lista de adjacência e 1 para matriz de adjacência
 
     GrafoComPeso g(FileName, mode, 1);                    // Criação do objeto grafo com peso
@@ -30,7 +30,7 @@ int main() {
 
     // cout << g.distancia(1, 7, 0, 1) << endl;                       // Distância mínima entre os vértices 1 e 4
 
-    cout << g.ford_fulkerson(1, 2, 1) << endl;                     // Fluxo máximo entre os vértices 1 e 2
+    cout << g.ford_fulkerson(1, 2, 1).first << endl;                     // Fluxo máximo entre os vértices 1 e 2
 
     clock_t end = clock();
 
@@ -39,3 +39,6 @@ int main() {
     return 0;   
 
 }
+
+//  g++ main.cpp -o main -O3
+// ./main
