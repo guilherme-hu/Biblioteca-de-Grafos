@@ -17,7 +17,7 @@ protected:
     vector<vector< pair< pair<int, int> , int> >> residual;         // Lista de adjacências para o grafo residual, usado no Ford-Fulkerson
                                                                     // o/r = tipo da aresta: origem/reversa -> 1 se a aresta é de origem e 0 se é reversa
                                                                     // f/r = valor do fluxo/resíduo -> se a aresta é de origem o valor é do fluxo na aresta, se for reversa é o valor do resíduo
-    vector<pair<pair<int, int>,int>> pai_duplo;                     // Vetor que guarda o pai de cada vértice no caminho aumentante encontrado pelo Ford-Fulkerson
+    vector<pair<int, int>> pai_duplo;                               // Vetor que guarda o pai de cada vértice no caminho aumentante encontrado pelo Ford-Fulkerson
                                                                     // Primeiro int é o pai; segundo int do pai é o indice na lista de adj; e o terceiro int é o tipo da aresta (origem/reversa)
     bool bfs_FF(int s, int t);                                      // Método que realiza a BFS para o algoritmo de Ford-Fulkerson
     bool dfs_FF(int s, int t);                                      // Método que realiza a DFS para o algoritmo de Ford-Fulkerson
@@ -85,7 +85,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
             // adjPeso.resize(V);
             original.resize(V);
             residual.resize(V);
-            pai_duplo.resize(V, {{-2,-2},0});
+            pai_duplo.resize(V, {-2,-2});
         }
 
         // Inicializar os vetores de grau, visitados, pai, nível, distância e distância mínima
@@ -581,8 +581,8 @@ bool GrafoComPeso::bfs_FF(int s, int t) {
 
             if (!vis[v] && capacity > 0) { // se o vértice não foi visitado e a capacidade da aresta é maior que 0
                 fila.push(v);
-                if (residual[u][i].first.first == 1) pai_duplo[v] = {{u, i}, 1}; // se a aresta é de origem
-                else pai_duplo[v] = {{u, i}, 0}; // se a aresta é reversa
+                if (residual[u][i].first.first == 1) pai_duplo[v] = {u, i}; // se a aresta é de origem
+                else pai_duplo[v] = {u, i}; // se a aresta é reversa
                 vis[v] = true;
 
                 if (v == t) return true;
@@ -598,8 +598,8 @@ int GrafoComPeso::gargalo(int s, int t) {
     int gargalo = INF;
     int v = t;
     while (v != s) { // percorre o caminho de t até s, pelo pai de cada vértice
-        int u = pai_duplo[v].first.first; // vértice pai
-        int i = pai_duplo[v].first.second; // índice da aresta na lista de adjacências
+        int u = pai_duplo[v].first; // vértice pai
+        int i = pai_duplo[v].second; // índice da aresta na lista de adjacências
         gargalo = min(gargalo, residual[u][i].first.second); // atualiza o gargalo
         v = u;
     }
@@ -610,15 +610,16 @@ int GrafoComPeso::gargalo(int s, int t) {
 // Método que atualiza o grafo residual após encontrar um caminho aumentante no Ford-Fulkerson
 void GrafoComPeso::atualizar_grafo_residual(int u, int v, int gargalo) {
     while (v != u) {
-        int p = pai_duplo[v].first.first; // vértice pai
-        int i = pai_duplo[v].first.second; // índice da aresta na lista de adjacências
+        int p = pai_duplo[v].first; // vértice pai
+        int i = pai_duplo[v].second; // índice da aresta na lista de adjacências
         
         residual[p][i].first.second -= gargalo; // diminui a capacidade da aresta no grafo residual
                                                 // Peso da aresta p -> v -= gargalo
-
+        
         // Atualiza, no grafo residual, a aresta contrária à atualizada acima
         for (int j = 0; j < residual[v].size(); ++j) {
-            if (residual[v][j].second == p && residual[v][j].first.first == !(pai_duplo[v].second)) {
+            if (residual[v][j].second == p && residual[v][j].first.first == !(residual[p][i].first.first)) {
+            // se a aresta é v -> p & se seu tipo é contrário ao de antes (original e reversa)
                 residual[v][j].first.second += gargalo; // Peso da aresta v -> p += gargalo
                 break;
             }
