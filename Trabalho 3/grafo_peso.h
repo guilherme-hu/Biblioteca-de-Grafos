@@ -17,6 +17,8 @@ protected:
     vector<vector< pair< pair<int, int> , int> >> residual;         // Lista de adjacências para o grafo residual, usado no Ford-Fulkerson
                                                                     // o/r = tipo da aresta: origem/reversa -> 1 se a aresta é de origem e 0 se é reversa
                                                                     // f/r = valor do fluxo/resíduo -> se a aresta é de origem o valor é do fluxo na aresta, se for reversa é o valor do resíduo
+    vector<vector< pair< pair<int,int>,int> >> original_inicial;    // Lista de adjacências com capacidades e fluxos para grafos direcionados em seu estado inicial (serve para resetar as estruturas acima a cada execução do Ford-Fulkerson)
+    vector<vector< pair< pair<int,int>,int> >> residual_inicial;    // Lista de adjacências para o grafo residual em seu estado inicial (serve para resetar as estruturas acima a cada execução do Ford-Fulkerson)
     vector<pair<int, int>> pai_duplo;                               // Vetor que guarda o pai de cada vértice no caminho aumentante encontrado pelo Ford-Fulkerson
                                                                     // Primeiro int é o pai; segundo int do pai é o indice na lista de adj; e o terceiro int é o tipo da aresta (origem/reversa)
     bool bfs_FF(int s, int t);                                      // Método que realiza a BFS para o algoritmo de Ford-Fulkerson
@@ -40,8 +42,8 @@ public:
     size_t getAdjMemoryUsage() const;                                       // Método que obtém memória (calculada) usada pela representação em lista
     size_t getMatMemoryUsage() const;                                       // Método que obtém memória (calculada) usada pela representação em matriz
 
-    
-    pair <int,vector<vector<pair<pair<int, int>,int>>>> ford_fulkerson(int s, int t, int print = 0);  // Método que realiza o algoritmo de Ford-Fulkerson 
+    // fluxo máximo  /   lista de adj do grafo original
+    pair <int, vector<vector<pair<pair<int, int>,int>>>> ford_fulkerson(int s, int t, int print = 0);  // Método que realiza o algoritmo de Ford-Fulkerson 
                                                                                                             // Retorna pair de fluxo máximo e lista de adjacência do grafo original
                                                                                                             // Quando print = 1 informações são printadas no txt
 
@@ -84,8 +86,8 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
         }
         else {
             adjPeso.resize(V);
-            original.resize(V);
-            residual.resize(V);
+            original_inicial.resize(V);
+            residual_inicial.resize(V);
             pai_duplo.resize(V, {-2,-2});
         }
 
@@ -111,9 +113,9 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
                 grau[v1]++;
                 if (cap < 0) negativo = true; // capacidade negativa
                 adjPeso[v1].push_back({cap, v2});
-                original[v1].push_back({{cap, 0}, v2});
-                residual[v1].push_back({{1, cap}, v2});
-                residual[v2].push_back({{0, 0}, v1});
+                original_inicial[v1].push_back({{cap, 0}, v2});
+                residual_inicial[v1].push_back({{1, cap}, v2});
+                residual_inicial[v2].push_back({{0, 0}, v1});
                 A++;
             }
         }
@@ -653,6 +655,9 @@ pair <int,vector<vector<pair< pair<int,int>,int>>>> GrafoComPeso::ford_fulkerson
     clock_t start = clock();
     s--; t--;
     int fluxo_max = 0;
+
+    residual = residual_inicial; // Inicializando o grafo residual
+    original = original_inicial; // Inicializando o grafo original
 
     if (negativo) { // Ford-Fulkerson não funciona com pesos negativos (capacidade negativa)
         cout << "O grafo possui arestas com peso negativo, a biblioteca nao implementa fluxo máximo com pesos negativos!" << endl;
