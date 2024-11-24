@@ -34,13 +34,13 @@ G.Dijkstra(int vértice inicial, int heap) // executa o algoritmo de Dijkstra, p
 G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap) // calcula a distância entre os vértices 1 e 2, a partir do algoritmo de Dijkstra
 
 // Se o grafo for direcionado, além dos métodos acima e os da classe pai:
-G.ford_fulkerson(int vértice s, int vértice t, int print) // calcula o fluxo máximo no grafo dado, de vértices inicial s e final t 
+G.ford_fulkerson(int vértice s, int vértice t, int print) // retorna, em formato de pair o fluxo máximo entre os vértices s e t na rede de fluxo, junto da distribuição de fluxo por aresta 
 ```
 - G.Dijkstra(int vértice inicial, int heap) → executa o algoritmo de Dijkstra. Esse método não retorna nada e só altera variáveis protegidas da subclasse, o usuário pode chamá-lo, mas não terá nenhum efeito visível a ele. Sua importância se deve ao seu uso no método "distância".
 - G.distancia(int vértice 1, int vértice 2, int print_caminho, int heap) → override do método genérico distância. Retorna a distância mínima entre os vértices 1 e 2, ou, caso não haja um caminho entre eles, -1 é retornado. Por meio dos parâmetros passados ao método, é possível escolher se será ou não impresso o caminho mínimo, assim como escolher se, no Dijkstra dentro do método, será ou não executado usando o heap
 
 -- Caso o grafo seja direcionado, é possível também chamar o seguinte método:
-- G.ford_fulkerson(int vértice s, int vértice t, int print) -> calcula e retorna o valor do fluxo máximo no grafo direcionado G e a distribuição de fluxos para cada aresta, de vértices inicial s e final t, com a opção de salvar esses dados em um arquivo txt
+- G.ford_fulkerson(int vértice s, int vértice t, int print) -> calcula e retorna o valor do fluxo máximo no grafo direcionado G e a distribuição de fluxos para cada aresta, de vértices inicial s e final t, em formato de pair, com a opção de salvar esses dados em um arquivo txt
 
 
 ### Chamada dos Métodos Extras (funcionam para todos objetos):
