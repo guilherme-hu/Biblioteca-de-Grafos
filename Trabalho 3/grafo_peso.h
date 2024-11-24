@@ -66,6 +66,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
 
     // Leitura do arquivo de entrada
     std::ifstream arquivo(FileName);
+    cout << "-> Pegando dados do txt de grafo com peso: '" << FileName << "'" << endl;
     if(!arquivo.is_open()){
         std::cerr << "-> Não foi possível abrir o arquivo '" << FileName << "'\n";
     }
@@ -82,7 +83,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
             else matPeso.resize(V, vector<float>(V, INF));
         }
         else {
-            // adjPeso.resize(V);
+            adjPeso.resize(V);
             original.resize(V);
             residual.resize(V);
             pai_duplo.resize(V, {-2,-2});
@@ -109,7 +110,7 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
                 v1--; v2--;
                 grau[v1]++;
                 if (cap < 0) negativo = true; // capacidade negativa
-                // adjPeso[v1].push_back({cap, v2});
+                adjPeso[v1].push_back({cap, v2});
                 original[v1].push_back({{cap, 0}, v2});
                 residual[v1].push_back({{1, cap}, v2});
                 residual[v2].push_back({{0, 0}, v1});
@@ -129,17 +130,16 @@ GrafoComPeso::GrafoComPeso(string FileName, int mode, int direcionado = 0) {
     else grauMediano = graus[V/2];
     grauMedio = 2*A/V;  
 
-    if (direcionado == 0){
-        // Cálculo das componentes conexas
-        for (int i = 0; i < V; i++){
-            if(vis[i] == 0){
-                vector<int> aux = bfs_CompCon(i);
-                compCon.push_back({aux.size(), aux});
-            }
+    // Cálculo das componentes conexas
+    for (int i = 0; i < V; i++){
+        if(vis[i] == 0){
+            vector<int> aux = bfs_CompCon(i);
+            compCon.push_back({aux.size(), aux});
         }
-        std::sort(compCon.begin(),compCon.end(),std::greater< std::pair<int,std::vector<int>> >());
     }
+    std::sort(compCon.begin(),compCon.end(),std::greater< std::pair<int,std::vector<int>> >());
 }
+
 
 // Método que adiciona aresta com peso ao modo de representação escolhido do grafo com peso
 // mode = 0 para lista de adjacência e 1 para matriz de adjacência
